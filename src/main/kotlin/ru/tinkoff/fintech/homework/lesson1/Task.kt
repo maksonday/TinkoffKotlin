@@ -1,0 +1,45 @@
+package ru.tinkoff.fintech.homework.lesson1
+
+fun main(){
+    var warrior : WarriorUnit = WarriorUnit("Steve")
+    warrior.levelUp()
+    warrior.levelUp(25)
+    warrior.getBuff()
+    warrior.getBuff(5)
+    warrior.move(2, 2)
+    warrior.showPosition()
+    warrior.addShield()
+    warrior.showCharacteristics()
+
+    var archer : ArcherUnit = ArcherUnit("Tommy")
+    archer.levelUp()
+    archer.levelUp(25)
+    archer.getBuff()
+    archer.getBuff(5)
+    archer.move(2, 2)
+    archer.showPosition()
+    archer.showCharacteristics()
+
+    var mage : MageUnit = MageUnit("Gandalf")
+    mage.levelUp()
+    mage.levelUp(25)
+    mage.getBuff()
+    mage.getBuff(5)
+    mage.move(2, 2)
+    mage.showPosition()
+    mage.showCharacteristics()
+
+    var hero : HeroUnit = HeroUnit("Arthas", warrior)
+    hero.levelUp()
+    hero.levelUp(25)
+    hero.info()
+    hero.getBuff()
+    hero.getBuff(10)
+    hero.move(1, 1)
+    hero.addShield()
+    hero.info()
+
+    var hero_not_warrior : HeroUnit = HeroUnit("Jaina", mage)
+    hero_not_warrior.addShield()
+    hero_not_warrior.info()
+}
