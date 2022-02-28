@@ -1,7 +1,7 @@
 package ru.tinkoff.fintech.homework.lesson1
 
 fun main(){
-    var warrior : WarriorUnit = WarriorUnit("Steve")
+    val warrior : WarriorUnit = WarriorUnit("Steve")
     warrior.levelUp()
     warrior.levelUp(25)
     warrior.getBuff()
@@ -11,7 +11,7 @@ fun main(){
     warrior.addShield()
     warrior.showCharacteristics()
 
-    var archer : ArcherUnit = ArcherUnit("Tommy")
+    val archer : ArcherUnit = ArcherUnit("Tommy")
     archer.levelUp()
     archer.levelUp(25)
     archer.getBuff()
@@ -20,7 +20,7 @@ fun main(){
     archer.showPosition()
     archer.showCharacteristics()
 
-    var mage : MageUnit = MageUnit("Gandalf")
+    val mage : MageUnit = MageUnit("Gandalf")
     mage.levelUp()
     mage.levelUp(25)
     mage.getBuff()
@@ -29,7 +29,7 @@ fun main(){
     mage.showPosition()
     mage.showCharacteristics()
 
-    var hero : HeroUnit = HeroUnit("Arthas", warrior)
+    val hero : HeroUnit = HeroUnit("Arthas", warrior)
     hero.levelUp()
     hero.levelUp(25)
     hero.info()
@@ -39,7 +39,7 @@ fun main(){
     hero.addShield()
     hero.info()
 
-    var hero_not_warrior : HeroUnit = HeroUnit("Jaina", mage)
-    hero_not_warrior.addShield()
-    hero_not_warrior.info()
+    val heroMage : HeroUnit = HeroUnit("Jaina", mage)
+    heroMage.addShield()
+    heroMage.info()
 }

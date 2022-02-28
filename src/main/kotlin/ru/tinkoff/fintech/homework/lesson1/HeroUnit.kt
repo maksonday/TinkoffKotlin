@@ -1,31 +1,21 @@
 package ru.tinkoff.fintech.homework.lesson1
 
 class HeroUnit(name : String, base : Unit) : Unit(name) {
-    private var attackDamage : Double
     private lateinit var type : String
     private var armor : Int = 0
     private var baseLink : Unit = base
 
-    override fun getAttackDamage(): Double {
-        return attackDamage
-    }
-
-    private var attackType : String
-    override fun getAttackType(): String {
-        return attackType
-    }
-
     init{
-        this.attackType = base.getAttackType()
+        this.attackType = base.attackType
         this.attackDamage = 50.0
         this.intelligence = baseLink.intelligence
         this.strength = baseLink.strength
         this.agility = baseLink.agility
-        setLvl(baseLink.getLvl())
+        this.lvl = baseLink.lvl
         if (baseLink is WarriorUnit) {
             attackDamage += strength
             this.type = "Warrior"
-            this.armor = (baseLink as WarriorUnit).getArmor()
+            this.armor = (baseLink as WarriorUnit).armor
         }
         if (baseLink is ArcherUnit) {
             attackDamage += agility
@@ -64,10 +54,10 @@ class HeroUnit(name : String, base : Unit) : Unit(name) {
     }
 
     fun info(){
-        println("Information block of %s\n--".format(getName()))
+        println("Information block of $name\n--")
         showCharacteristics()
-        println("-Armor: %d".format(armor))
-        println("AttackType is: %s".format(attackType))
+        println("-Armor: $armor")
+        println("AttackType is: $attackType")
         showPosition()
         println("--")
     }
