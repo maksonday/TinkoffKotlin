@@ -11,7 +11,7 @@ abstract class Unit(val name: String) {
     internal var lvl: Int = 1
     private var lvlUpBuff: Double = 1.5
 
-    fun showCharacteristics() {
+    open fun showCharacteristics() {
         println("Characteristics for $name:")
         println("-AttackDamage: $attackDamage\n-Intelligence: $intelligence\n-Strength: $strength\n-Agility: $agility\n-Level: $lvl\n")
     }
