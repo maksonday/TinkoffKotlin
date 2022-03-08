@@ -29,7 +29,7 @@ fun main() {
     mage.showPosition()
     mage.showCharacteristics()
 
-    val army = Army("My army", mutableListOf(warrior, mage, archer))
+    val army = Army("My army", listOf(warrior, mage, archer))
     army.getBuff(5)
     army.incAttackDamage(10)
     army.info()
