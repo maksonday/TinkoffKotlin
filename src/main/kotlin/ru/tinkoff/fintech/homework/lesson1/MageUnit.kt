@@ -1,6 +1,6 @@
 package ru.tinkoff.fintech.homework.lesson1
 
-class MageUnit(name : String) : Unit(name) {
+class MageUnit(name: String) : Unit(name) {
     override var attackDamage = 10.0 + intelligence
     override var attackType = "range"
     override fun getBuff(coefficient: Int) {
@@ -17,7 +17,7 @@ class MageUnit(name : String) : Unit(name) {
         showCharacteristics()
     }
 
-    override fun incAttackDamage(count : Int) {
+    override fun incAttackDamage(count: Int) {
         attackDamage += intelligence * count
     }
 }

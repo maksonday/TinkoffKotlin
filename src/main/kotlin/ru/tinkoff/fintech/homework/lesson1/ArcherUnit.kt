@@ -1,6 +1,6 @@
 package ru.tinkoff.fintech.homework.lesson1
 
-class ArcherUnit(name : String) : Unit(name) {
+class ArcherUnit(name: String) : Unit(name) {
     override var attackDamage = 10.0 + agility
     override var attackType = "range"
 
@@ -18,7 +18,7 @@ class ArcherUnit(name : String) : Unit(name) {
         showCharacteristics()
     }
 
-    override fun incAttackDamage(count : Int) {
+    override fun incAttackDamage(count: Int) {
         attackDamage += agility * count
     }
 }

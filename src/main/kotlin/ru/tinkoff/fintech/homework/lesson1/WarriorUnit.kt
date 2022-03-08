@@ -1,7 +1,7 @@
 package ru.tinkoff.fintech.homework.lesson1
 
-class WarriorUnit(name : String) : Unit(name) {
-    var armor : Int = 3
+class WarriorUnit(name: String) : Unit(name) {
+    private var armor: Int = 3
     override var attackDamage = 10.0 + strength
     override var attackType = "melee"
 
@@ -11,6 +11,7 @@ class WarriorUnit(name : String) : Unit(name) {
         buffMessage()
         showCharacteristics()
     }
+
     override fun getBuff() {
         strength += buffValue
         incAttackDamage(1)
@@ -18,14 +19,16 @@ class WarriorUnit(name : String) : Unit(name) {
         showCharacteristics()
     }
 
-    override fun incAttackDamage(count : Int) {
+    override fun incAttackDamage(count: Int) {
         attackDamage += strength * count
     }
-    override fun showCharacteristics(){
+
+    override fun showCharacteristics() {
         println("Characteristics for $name:")
-        println("-AttackDamage: %.2f\n-Armor: %d\n-Intelligence: %.2f\n-Strength: %.2f\n-Agility: %.2f\n-Level: $lvl\n".format(attackDamage, armor, intelligence, strength, agility))
+        println("-AttackDamage: $attackDamage\n-Armor: $armor\n-Intelligence: $intelligence\n-Strength: $strength\n-Agility: $agility\n-Level: $lvl\n")
     }
-    fun addShield(){
+
+    fun addShield() {
         armor += 10
     }
 }
