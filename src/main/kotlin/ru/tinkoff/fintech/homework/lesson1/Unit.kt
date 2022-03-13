@@ -1,14 +1,14 @@
 package ru.tinkoff.fintech.homework.lesson1
 
 abstract class Unit(val name: String) {
-    internal var intelligence: Double = 1.0
-    internal var strength: Double = 1.0
-    internal var agility: Double = 1.0
-    internal var buffValue: Double = 2.0
+    var intelligence: Double = 1.0
+    var strength: Double = 1.0
+    var agility: Double = 1.0
+    protected var buffValue: Double = 2.0
     private var pos: Position = Position(0, 0)
     open var attackDamage: Double = 0.0
     open lateinit var attackType: String
-    internal var lvl: Int = 1
+    protected var lvl: Int = 1
     private var lvlUpBuff: Double = 1.5
 
     open fun showCharacteristics() {

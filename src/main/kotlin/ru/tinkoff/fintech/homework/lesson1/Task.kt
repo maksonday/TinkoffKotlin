@@ -31,6 +31,7 @@ fun main() {
 
     val army = Army("My army", listOf(warrior, mage, archer))
     army.getBuff(5)
+    army.getBuff()
     army.incAttackDamage(10)
     army.info()
 }

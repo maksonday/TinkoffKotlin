@@ -1,7 +1,8 @@
 package ru.tinkoff.fintech.homework.lesson1
 
-class Army(name: String, private val units: List<Unit>) : Unit(name) {
-    override fun getBuff(coefficient: Int) {
+class Army(name: String, private val units: List<Unit>){
+    private var buffValue: Double = 2.0
+    fun getBuff(coefficient: Int) {
         incMainCharacteristic(coefficient)
         units.forEach { unit ->
             unit.incAttackDamage(coefficient)
@@ -10,7 +11,7 @@ class Army(name: String, private val units: List<Unit>) : Unit(name) {
         }
     }
 
-    override fun incAttackDamage(count: Int) {
+    fun incAttackDamage(count: Int) {
         units.forEach { unit -> unit.incAttackDamage(count) }
     }
 
@@ -22,7 +23,7 @@ class Army(name: String, private val units: List<Unit>) : Unit(name) {
         }
     }
 
-    override fun getBuff() {
+    fun getBuff() {
         incMainCharacteristic(1)
         units.forEach { unit ->
             unit.incAttackDamage(1)
