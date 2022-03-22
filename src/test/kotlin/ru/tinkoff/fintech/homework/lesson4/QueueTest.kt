@@ -5,8 +5,19 @@ import org.junit.jupiter.api.Test
 
 internal class QueueTest {
     @Test
-    fun `offer всегда должен возвращать true и добавить элемент в очередь`() {
-        val queue = Queue<Any>()
+    fun `если пытаться создать очередь с отрицательным capacity, должно выкидываться исключение`() {
+        var queue: Queue<Any>
+
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            queue = Queue<Any>(-1)
+        }
+
+        assertEquals("Failed requirement.", exception.message)
+    }
+
+    @Test
+    fun `offer должен возвращать true, если мы хотим добавить элемент в очередь и при этом capacity очереди не будет превышена`() {
+        val queue = Queue<Any>(1)
 
         val check = queue.offer(10)
 
@@ -19,19 +30,28 @@ internal class QueueTest {
     }
 
     @Test
-    fun `remove должен выбрасывать исключение, если очередь пустая`() {
-        val queue = Queue<Any>()
+    fun `offer должен возвращать false, если мы хотим добавить элемент в очередь и при этом capacity будет превышена`() {
+        val queue = Queue<Any>(0)
 
-        val exception : Exception = assertThrows(Exception::class.java){
+        val check = queue.offer(10)
+
+        assertEquals(false, check)
+    }
+
+    @Test
+    fun `remove должен выбрасывать исключение, если очередь пустая`() {
+        val queue = Queue<Any>(1)
+
+        val exception = assertThrows(NoSuchElementException::class.java) {
             queue.remove()
         }
 
-        assertEquals("NoSuchElementException", exception.message)
+        assertEquals("Queue is empty", exception.message)
     }
 
     @Test
     fun `remove должен вернуть элемент из головы очереди и удалить его из очереди, если очередь не пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
         queue.offer(10)
 
         val element = queue.remove()
@@ -47,18 +67,18 @@ internal class QueueTest {
 
     @Test
     fun `element должен выбрасывать исключение, если очередь пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
 
-        val exception : Exception = assertThrows(Exception::class.java){
+        val exception = assertThrows(NoSuchElementException::class.java) {
             queue.element()
         }
 
-        assertEquals("NoSuchElementException", exception.message)
+        assertEquals("Queue is empty", exception.message)
     }
 
     @Test
     fun `element должен вернуть элемент из головы очереди, не удаляя его, если очередь не пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
         queue.offer(10)
 
         val element = queue.element()
@@ -73,7 +93,7 @@ internal class QueueTest {
 
     @Test
     fun `peek должен вернуть null, если очередь пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
 
         val check = queue.peek()
 
@@ -82,10 +102,10 @@ internal class QueueTest {
 
     @Test
     fun `peek должен вернуть элемент из головы очереди, не удаляя его, если очередь не пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
         queue.offer(10)
 
-        val peek = queue.element()
+        val peek = queue.peek()
 
         assertAll("Посмотрим значение первого и единственного элемента и убедимся, что он не удалился при помощи вызова isEmpty",
             {
@@ -97,7 +117,7 @@ internal class QueueTest {
 
     @Test
     fun `poll должен вернуть null, если очередь пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
 
         val check = queue.poll()
 
@@ -106,7 +126,7 @@ internal class QueueTest {
 
     @Test
     fun `poll должен вернуть элемент из головы очереди и удалить его, если очередь не пустая`() {
-        val queue = Queue<Any>()
+        val queue = Queue<Any>(1)
         queue.offer(10)
 
         val peek = queue.poll()
@@ -120,8 +140,8 @@ internal class QueueTest {
     }
 
     @Test
-    fun `isEmpty должен возвращать true, если очередь пустая`(){
-        val queue = Queue<Any>()
+    fun `isEmpty должен возвращать true, если очередь пустая`() {
+        val queue = Queue<Any>(1)
 
         val check = queue.isEmpty()
 
@@ -129,8 +149,8 @@ internal class QueueTest {
     }
 
     @Test
-    fun `isEmpty должен возвращать false, если очередь не пустая`(){
-        val queue = Queue<Any>()
+    fun `isEmpty должен возвращать false, если очередь не пустая`() {
+        val queue = Queue<Any>(1)
         queue.offer(10)
 
         val check = queue.isEmpty()

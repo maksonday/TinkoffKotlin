@@ -1,21 +1,24 @@
 package ru.tinkoff.fintech.homework.lesson4
 
-import java.lang.Exception
+class Queue<E>(private val capacity: Int) {
+    init {
+        require(capacity >= 0)
+    }
 
-class Queue<E>() {
     private var queue = mutableListOf<E>()
     private var size = 0
 
-    fun offer(obj: E) : Boolean {
-        if (queue.add(obj)){
+    fun offer(obj: E): Boolean {
+        if (size + 1 > capacity) return false
+        else {
+            queue.add(obj)
             size++
             return true
         }
-        return false
     }
 
     fun remove(): E {
-        if (isEmpty()) throw Exception("NoSuchElementException")
+        if (isEmpty()) throw NoSuchElementException("Queue is empty")
         else {
             val temp = queue[0]
             queue.removeFirst()
@@ -25,7 +28,7 @@ class Queue<E>() {
     }
 
     fun element(): E {
-        if (isEmpty()) throw Exception("NoSuchElementException")
+        if (isEmpty()) throw NoSuchElementException("Queue is empty")
         else return queue[0]
     }
 
@@ -34,7 +37,7 @@ class Queue<E>() {
         else queue[0]
     }
 
-    fun poll(): E?{
+    fun poll(): E? {
         return if (isEmpty()) null
         else {
             val temp = queue[0]

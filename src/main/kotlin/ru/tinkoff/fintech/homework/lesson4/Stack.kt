@@ -1,21 +1,25 @@
 package ru.tinkoff.fintech.homework.lesson4
-import java.lang.Exception
 
-class Stack<E>(){
-    private var stack  = mutableListOf<E>()
+class Stack<E>(private val capacity: Int) {
+    init {
+        require(capacity >= 0)
+    }
+
+    private var stack = mutableListOf<E>()
     private var size = 0
 
-    fun push(elem : E) : Boolean{
-        if (stack.add(elem)){
+    fun push(elem: E): Boolean {
+        if (size + 1 > capacity) return false
+        else {
+            stack.add(elem)
             size++
             return true
         }
-        return false
     }
 
-    fun pop(): E{
-        if (isEmpty()) throw Exception("NoSuchElementException")
-        else{
+    fun pop(): E {
+        if (isEmpty()) throw NoSuchElementException("Stack is empty")
+        else {
             val temp = stack[size - 1]
             size--
             stack.removeLast()
@@ -23,14 +27,14 @@ class Stack<E>(){
         }
     }
 
-    fun peek(): E{
-        if (isEmpty()) throw Exception("NoSuchElementException")
-        else{
+    fun peek(): E {
+        if (isEmpty()) throw NoSuchElementException("Stack is empty")
+        else {
             return stack[size - 1]
         }
     }
 
-    fun isEmpty() : Boolean{
+    fun isEmpty(): Boolean {
         return size == 0
     }
 

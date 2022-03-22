@@ -1,12 +1,23 @@
 package ru.tinkoff.fintech.homework.lesson4
 
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
-internal class StackTest{
+internal class StackTest {
     @Test
-    fun `push всегда должен возвращать true и добавить элемент в стек`() {
-        val stack = Stack<Any>()
+    fun `если пытаться создать очередь с отрицательным capacity, должно выкидываться исключение`() {
+        var stack: Stack<Any>
+
+        val exception = assertThrows(IllegalArgumentException::class.java) {
+            stack = Stack<Any>(-1)
+        }
+
+        assertEquals("Failed requirement.", exception.message)
+    }
+
+    @Test
+    fun `push должен возвращать true и добавить элемент в стек, если capacity стека не будет превышена`() {
+        val stack = Stack<Any>(1)
 
         val check = stack.push(10)
 
@@ -19,19 +30,28 @@ internal class StackTest{
     }
 
     @Test
-    fun `pop должен выбрасывать исключение, если стек пустой`() {
-        val stack = Stack<Any>()
+    fun `push должен возвращать false, если мы хотим добавить элемент в стек и при этом capacity будет превышена`() {
+        val stack = Stack<Any>(0)
 
-        val exception : Exception = assertThrows(Exception::class.java) {
+        val check = stack.push(10)
+
+        assertEquals(false, check)
+    }
+
+    @Test
+    fun `pop должен выбрасывать исключение, если стек пустой`() {
+        val stack = Stack<Any>(1)
+
+        val exception = assertThrows(NoSuchElementException::class.java) {
             stack.pop()
         }
 
-        assertEquals("NoSuchElementException", exception.message)
+        assertEquals("Stack is empty", exception.message)
     }
 
     @Test
     fun `pop должен вернуть элемент из верха стека и удалить его из стека, если стек не пустой`() {
-        val stack = Stack<Any>()
+        val stack = Stack<Any>(1)
         stack.push(10)
 
         val element = stack.pop()
@@ -45,8 +65,8 @@ internal class StackTest{
     }
 
     @Test
-    fun `peek должен вернуть элемент с верха стека, не удаляя его, если стек не пустой`(){
-        val stack = Stack<Any>()
+    fun `peek должен вернуть элемент с верха стека, не удаляя его, если стек не пустой`() {
+        val stack = Stack<Any>(1)
         stack.push(10)
 
         val element = stack.peek()
@@ -61,18 +81,18 @@ internal class StackTest{
 
     @Test
     fun `peek должен выбрасывать исключение, если стек пустой`() {
-        val stack = Stack<Any>()
+        val stack = Stack<Any>(1)
 
-        val exception : Exception = assertThrows(Exception::class.java) {
+        val exception = assertThrows(NoSuchElementException::class.java) {
             stack.peek()
         }
 
-        assertEquals("NoSuchElementException", exception.message)
+        assertEquals("Stack is empty", exception.message)
     }
 
     @Test
-    fun `isEmpty должен возвращать true, если стек пустой`(){
-        val stack = Stack<Any>()
+    fun `isEmpty должен возвращать true, если стек пустой`() {
+        val stack = Stack<Any>(1)
 
         val check = stack.isEmpty()
 
@@ -80,8 +100,8 @@ internal class StackTest{
     }
 
     @Test
-    fun `isEmpty должен возвращать false, если стек не пустой`(){
-        val stack = Stack<Any>()
+    fun `isEmpty должен возвращать false, если стек не пустой`() {
+        val stack = Stack<Any>(1)
         stack.push(10)
 
         val check = stack.isEmpty()
