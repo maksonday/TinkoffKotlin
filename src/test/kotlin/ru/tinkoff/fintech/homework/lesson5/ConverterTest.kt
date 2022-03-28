@@ -74,9 +74,9 @@ internal class ConverterTest {
         assertAll(
             {
                 assertEquals(3, converted.size)
+                assertEquals(Car("u6", "Toyota", "sedan", 60000.0, 10.0), converted.toList()[0])
                 assertEquals(Car("u8", "BMV", "miniven", 30000.0, 50.0), converted.toList()[1])
                 assertEquals(Car("u7", "Lada", "sedan", 40000.0, 40.0), converted.toList()[2])
-                assertEquals(Car("u6", "Toyota", "sedan", 60000.0, 10.0), converted.toList()[0])
             }
         )
     }
