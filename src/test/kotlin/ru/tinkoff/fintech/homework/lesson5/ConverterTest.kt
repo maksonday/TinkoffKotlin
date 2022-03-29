@@ -10,18 +10,13 @@ internal class ConverterTest {
     @ParameterizedTest
     @CsvSource(
         "Тойота, Toyota",
-        "тойота, toyota",
-        "тОйоТа, toyota",
-        "ТОйОтА, Toyota",
-        "ТОЙОТА, TOYOTA",
         "345435@#!@#12, 345435@#!@#12",
-        "ТойОта123, Toyota123"
     )
     fun `transliterate должен преобразовывать строки на русском языке в строки на английском, приводя строку к нижнему регистру, но при этом сохраняя первую заглавную букву`(
         initialString: String,
         convertedString: String
     ) {
-        val method = Converter.javaClass.getDeclaredMethod("transliterate", String::class.java)
+        val method = Converter.javaClass.getDeclaredMethod("translate", String::class.java)
         method.isAccessible = true
 
         val converted = method.invoke(Converter, initialString)
@@ -30,11 +25,11 @@ internal class ConverterTest {
     }
 
     private val carList = listOf(
-        Car("у6", "Тойота", "седан", 60000.0, 10.0),
-        Car("у8", "БМВ", "минивен", 30000.0, 50.0),
-        Car("у7", "Лада", "седан", 40000.0, 40.0),
-        Car("икс10", "Тойота", "седан", 60000.0, 20.0),
-        Car("икс11", "Тойота", "минивен", 120000.0, 30.0)
+        Car("обычная машина", "Тойота", "седан", 20000.0, 10.0),
+        Car("самая крутая машина", "БМВ", "минивен", 100000.0, 50.0),
+        Car("самая быстрая машина", "Феррари", "седан", 120000.0, 40.0),
+        Car("быстрая машина", "Киа", "седан", 30000.0, 20.0),
+        Car("крутая машина", "Ауди", "минивен", 40000.0, 50.0)
     )
 
     @Test
@@ -43,11 +38,11 @@ internal class ConverterTest {
 
         assertAll(
             {
-                assertEquals(Car("u8", "BMV", "miniven", 990000.0, 50.0), converted.toList()[0])
-                assertEquals(Car("u7", "Lada", "sedan", 1320000.0, 40.0), converted.toList()[1])
-                assertEquals(Car("u6", "Toyota", "sedan", 1980000.0, 10.0), converted.toList()[2])
-                assertEquals(Car("iks10", "Toyota", "sedan", 1980000.0, 20.0), converted.toList()[3])
-                assertEquals(Car("iks11", "Toyota", "miniven", 3960000.0, 30.0), converted.toList()[4])
+                assertEquals(Car("casual car", "Toyota", "sedan", 660000.0, 10.0), converted.toList()[0])
+                assertEquals(Car("fast car", "Kia", "sedan", 990000.0, 20.0), converted.toList()[1])
+                assertEquals(Car("cool car", "Audi", "miniven", 1320000.0, 50.0), converted.toList()[2])
+                assertEquals(Car("the coolest car", "BMW", "miniven", 3300000.0, 50.0), converted.toList()[3])
+                assertEquals(Car("the fastest car", "Ferrari", "sedan", 3960000.0, 40.0), converted.toList()[4])
             }
         )
     }
@@ -58,11 +53,11 @@ internal class ConverterTest {
 
         assertAll(
             {
-                assertEquals(Car("у6", "Тойота", "седан", 60000.0, 10.0), converted.toList()[0])
-                assertEquals(Car("у7", "Лада", "седан", 40000.0, 40.0), converted.toList()[1])
-                assertEquals(Car("икс10", "Тойота", "седан", 60000.0, 20.0), converted.toList()[2])
-                assertEquals(Car("у8", "БМВ", "минивен", 30000.0, 50.0), converted.toList()[3])
-                assertEquals(Car("икс11", "Тойота", "минивен", 120000.0, 30.0), converted.toList()[4])
+                assertEquals(Car("обычная машина", "Тойота", "седан", 20000.0, 10.0), converted.toList()[0])
+                assertEquals(Car("самая быстрая машина", "Феррари", "седан", 120000.0, 40.0), converted.toList()[1])
+                assertEquals(Car("быстрая машина", "Киа", "седан", 30000.0, 20.0), converted.toList()[2])
+                assertEquals(Car("самая крутая машина", "БМВ", "минивен", 100000.0, 50.0), converted.toList()[3])
+                assertEquals(Car("крутая машина", "Ауди", "минивен", 40000.0, 50.0), converted.toList()[4])
             }
         )
     }
@@ -74,9 +69,9 @@ internal class ConverterTest {
         assertAll(
             {
                 assertEquals(3, converted.size)
-                assertEquals(Car("u6", "Toyota", "sedan", 60000.0, 10.0), converted.toList()[0])
-                assertEquals(Car("u8", "BMV", "miniven", 30000.0, 50.0), converted.toList()[1])
-                assertEquals(Car("u7", "Lada", "sedan", 40000.0, 40.0), converted.toList()[2])
+                assertEquals(Car("casual car", "Toyota", "sedan", 20000.0, 10.0), converted.toList()[0])
+                assertEquals(Car("fast car", "Kia", "sedan", 30000.0, 20.0), converted.toList()[1])
+                assertEquals(Car("cool car", "Audi", "miniven", 40000.0, 50.0), converted.toList()[2])
             }
         )
     }
