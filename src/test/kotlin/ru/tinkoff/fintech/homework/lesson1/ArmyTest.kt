@@ -11,7 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 @ExtendWith(MockKExtension::class)
-internal class ArmyTest {
+class ArmyTest {
     @ParameterizedTest
     @CsvSource("1, 1.0, 3.0, 14.0", "2, 2.0, 6.0, 23.0")
     fun `тестируем army getBuff с count с помощью mockk`(
