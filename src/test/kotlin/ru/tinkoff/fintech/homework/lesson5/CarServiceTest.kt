@@ -1,16 +1,15 @@
 package ru.tinkoff.fintech.homework.lesson5
 
-import org.junit.jupiter.api.Assertions.assertAll
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.lang.reflect.InvocationTargetException
 
-class ConverterTest {
+class CarServiceTest {
     @ParameterizedTest
     @CsvSource(
         "Тойота, Toyota",
-        "345435@#!@#12, 345435@#!@#12",
         "минивен, miniven",
         "самая крутая машина, the coolest car"
     )
@@ -18,12 +17,24 @@ class ConverterTest {
         initialString: String,
         convertedString: String
     ) {
-        val method = Converter.javaClass.getDeclaredMethod("translate", String::class.java)
+        val method = CarService().javaClass.getDeclaredMethod("translate", String::class.java)
         method.isAccessible = true
 
-        val converted = method.invoke(Converter, initialString)
+        val converted = method.invoke(CarService(), initialString)
 
         assertEquals(convertedString, converted)
+    }
+
+    @Test
+    fun `translate должен выкинуть исключение, если исходного слова нет в словаре`() {
+        val method = CarService().javaClass.getDeclaredMethod("translate", String::class.java)
+        method.isAccessible = true
+
+        val exception = assertThrows(InvocationTargetException::class.java) {
+            method.invoke(CarService(), "345435@#!@#12")
+        }
+
+        assertEquals("Unknown word", exception.cause?.message)
     }
 
     private val carList = listOf(
@@ -36,7 +47,7 @@ class ConverterTest {
 
     @Test
     fun `transform должен преобразовать поля name, brand и typeOfBack с русского на английский, а поле price должно измениться в соответствии с курсом валюты CURRENCY_RATE, полученная коллекция должна быть отсортирована по возрастанию price`() {
-        val converted = Converter.transform(carList)
+        val converted = CarService().transform(carList)
 
         assertAll(
             {
@@ -51,22 +62,25 @@ class ConverterTest {
 
     @Test
     fun `groupByTypeOfBack должен группировать коллекцию из Car по полю typeOfBack`() {
-        val converted = Converter.groupByTypeOfBack(carList)
+        val converted = CarService().groupByTypeOfBack(carList)
 
         assertAll(
             {
-                assertEquals(Car("обычная машина", "Тойота", "седан", 20000.0, 10.0), converted.toList()[0])
-                assertEquals(Car("самая быстрая машина", "Феррари", "седан", 120000.0, 40.0), converted.toList()[1])
-                assertEquals(Car("быстрая машина", "Киа", "седан", 30000.0, 20.0), converted.toList()[2])
-                assertEquals(Car("самая крутая машина", "БМВ", "минивен", 100000.0, 50.0), converted.toList()[3])
-                assertEquals(Car("крутая машина", "Ауди", "минивен", 40000.0, 50.0), converted.toList()[4])
+                assertEquals(Car("обычная машина", "Тойота", "седан", 20000.0, 10.0), converted["седан"]?.get(0))
+                assertEquals(
+                    Car("самая быстрая машина", "Феррари", "седан", 120000.0, 40.0),
+                    converted["седан"]?.get(1)
+                )
+                assertEquals(Car("быстрая машина", "Киа", "седан", 30000.0, 20.0), converted["седан"]?.get(2))
+                assertEquals(Car("самая крутая машина", "БМВ", "минивен", 100000.0, 50.0), converted["минивен"]?.get(0))
+                assertEquals(Car("крутая машина", "Ауди", "минивен", 40000.0, 50.0), converted["минивен"]?.get(1))
             }
         )
     }
 
     @Test
     fun `filter должен выбрать элементы, удовлетворяющие предикату, например, Car с price меньше 100000, затем перевести поля name, brand, typeOfBack с русского на английский и взять первые 3 элемента`() {
-        val converted = Converter.filterFirstThree(carList) { it.price < 100000.0 }
+        val converted = CarService().filterFirstThree(carList) { it.price < 100000.0 }
 
         assertAll(
             {
