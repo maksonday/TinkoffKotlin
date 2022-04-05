@@ -1,8 +1,8 @@
 package ru.tinkoff.fintech.homework.lesson1
 
-class Army(name: String, private val units: List<Unit>){
+class Army(val name: String, private val units: List<Unit>){
     private var buffValue: Double = 2.0
-    fun getBuff(coefficient: Int) {
+    fun getBuff(coefficient: Int){
         incMainCharacteristic(coefficient)
         units.forEach { unit ->
             unit.incAttackDamage(coefficient)
