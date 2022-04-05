@@ -47,7 +47,9 @@ class CarServiceTest {
 
     @Test
     fun `transform должен преобразовать поля name, brand и typeOfBack с русского на английский, а поле price должно измениться в соответствии с курсом валюты CURRENCY_RATE, полученная коллекция должна быть отсортирована по возрастанию price`() {
-        val converted = CarService().transform(carList)
+        val carService = CarService()
+
+        val converted = carService.transform(carList)
 
         assertAll(
             {
@@ -62,7 +64,9 @@ class CarServiceTest {
 
     @Test
     fun `groupByTypeOfBack должен группировать коллекцию из Car по полю typeOfBack`() {
-        val converted = CarService().groupByTypeOfBack(carList)
+        val carService = CarService()
+
+        val converted = carService.groupByTypeOfBack(carList)
 
         assertAll(
             {
@@ -80,7 +84,9 @@ class CarServiceTest {
 
     @Test
     fun `filter должен выбрать элементы, удовлетворяющие предикату, например, Car с price меньше 100000, затем перевести поля name, brand, typeOfBack с русского на английский и взять первые 3 элемента`() {
-        val converted = CarService().filterFirstThree(carList) { it.price < 100000.0 }
+        val carService = CarService()
+
+        val converted = carService.filterFirstThree(carList) { it.price < 100000.0 }
 
         assertAll(
             {
