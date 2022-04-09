@@ -13,16 +13,17 @@ repositories {
 
 dependencies {
     implementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    implementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    implementation("org.junit.jupiter:junit-jupiter:5.8.2")
     implementation("org.testng:testng:7.5")
-    implementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("io.mockk:mockk:1.12.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.6.5")
+    implementation("org.springframework.data:spring-data-jdbc:2.3.3")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.5")
 }
 
 tasks.test {
