@@ -1,18 +1,18 @@
 package ru.tinkoff.fintech.homework.lesson6.vm.service
 
 import org.springframework.stereotype.Service
-import ru.tinkoff.fintech.homework.lesson6.vm.model.*
-import ru.tinkoff.fintech.homework.lesson6.vm.model.external.Create
+import ru.tinkoff.fintech.homework.lesson6.vm.model.KVM
+import ru.tinkoff.fintech.homework.lesson6.vm.model.State
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateResponse
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.Status
 
 @Service
-class VMManager (
-    private val kvmService : KVMService,
-    private val hypervService : HyperVService,
+class VMManager(
+    private val kvmService: KVMService,
 ){
-    fun getKvmList() : Set<KVM>{
-        return kvmService.getList().toSet()
+    private val db = HashMap<Int, KVM>()
+    fun getKvmList(state : State): Set<KVM>{
+        return kvmService.getList(state)
     }
 
     fun createKvm(): CreateResponse<Int> =
@@ -23,5 +23,5 @@ class VMManager (
             CreateResponse(null, Status.DECLINED, e.message)
         }
 
-    fun getKvmById(id : Int) : Map<String, Any> = kvmService.getById(id).toMap()
+    fun getKvmById(id : Int) : KVM = kvmService.getById(id)
 }

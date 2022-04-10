@@ -26,4 +26,4 @@ class ImgServiceClient(
 }
 
 private const val GET_KVM_LIST = "/img_list"
-private const val GET_KVM_BY_ID = "/img?id={id}"
+private const val GET_KVM_BY_ID = "/img/{id}"
