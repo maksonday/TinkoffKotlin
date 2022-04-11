@@ -1,2 +1,7 @@
-spring.application.name: VMPlugger
+spring:
+  application.name: VMPlugger
+  profiles.active: dev
 server.port: 9000
+
+storage.address: http://localhost:9001
+kvm.list.address: http://localhost:9001

@@ -1,23 +1,26 @@
 package ru.tinkoff.fintech.homework.lesson6.vm.service
 
 import org.springframework.stereotype.Service
-import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
-import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
 import ru.tinkoff.fintech.homework.lesson6.vm.model.KVM
 import ru.tinkoff.fintech.homework.lesson6.vm.model.State
-import ru.tinkoff.fintech.homework.lesson6.vm.model.external.Create
-import ru.tinkoff.fintech.homework.lesson6.vm.service.client.KVMListClient
+import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateResponse
+import ru.tinkoff.fintech.homework.lesson6.vm.model.external.Status
 
 @Service
-class KVMService (private val kvmListClient: KVMListClient) {
-    fun getList(state : State): Set <KVM> = kvmListClient.getList(state)
-
-    fun getById(id : Int) : KVM{
-        val kvm = kvmListClient.getById(id)
-        return requireNotNull(kvm) { "Не существует KVM с данным id = $id" }
+class KVMService(
+    private val VMManager: VMManager,
+) {
+    fun getKvmList(state: State): Set<KVM> {
+        return VMManager.getList(state)
     }
 
-    fun create(type : String, id : Int, image : Image, config : Config): Int? {
-        return kvmListClient.create(id, type, image, config)
-    }
+    fun create(imgId: Int, configId: Int) : CreateResponse<Int> =
+        try {
+            val id = VMManager.create(imgId, configId)
+            CreateResponse(id, Status.IN_PROGRESS)
+        } catch (e: Exception) {
+            CreateResponse(null, Status.DECLINED, e.message)
+        }
+
+    fun getKvmById(id: Int): KVM = VMManager.getById(id)
 }

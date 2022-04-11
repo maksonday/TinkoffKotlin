@@ -1,16 +1,16 @@
 package ru.tinkoff.fintech.homework.lesson6.vm.model
 
 interface VM {
-    val type : String
-    val id : Int
-    val image : Image
-    val config : Config
+    val type: String
+    val id: Int
+    val image: Image
+    val config: Config
     val osType: String
-    val state : State
-    val status : Status
+    val state: State
+    val status: VMStatus
 }
 
-fun VM.toMap(): Map<String, Any>{
+fun VM.toMap(): Map<String, Any> {
     return mapOf(
         "type" to this.type,
         "id" to this.id,
@@ -22,6 +22,6 @@ fun VM.toMap(): Map<String, Any>{
     )
 }
 
-enum class Status { DISK_DETACHED, DISK_ATTACHED }
+enum class VMStatus { DISK_DETACHED, DISK_ATTACHED }
 
 enum class State { OFF, RUNNING, BOOT, SHUTTING_DOWN }
