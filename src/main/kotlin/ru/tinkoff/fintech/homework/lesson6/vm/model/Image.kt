@@ -4,5 +4,5 @@ data class Image(
     val name: String,
     val type: String,
     val diskSizeRequirements: Int,
-    val RAMRequirements: Int,
+    val ramRequirements: Int,
 )
