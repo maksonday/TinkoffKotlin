@@ -14,7 +14,6 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
-import net.minidev.json.JSONObject
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
@@ -23,10 +22,10 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActionsDsl
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.webjars.NotFoundException
 import ru.tinkoff.fintech.homework.lesson6.vm.model.*
-import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateResponse
-import ru.tinkoff.fintech.homework.lesson6.vm.model.external.Status
-import ru.tinkoff.fintech.homework.lesson6.vm.service.client.KVMListClient
+import ru.tinkoff.fintech.homework.lesson6.vm.model.external.*
+import ru.tinkoff.fintech.homework.lesson6.vm.service.client.KvmListClient
 import ru.tinkoff.fintech.homework.lesson6.vm.service.client.Storage
 import kotlin.random.Random.Default.nextInt
 import kotlin.text.Charsets.UTF_8
@@ -35,7 +34,7 @@ import kotlin.text.Charsets.UTF_8
 @AutoConfigureMockMvc
 class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: ObjectMapper) : FeatureSpec() {
     @MockkBean
-    private lateinit var client: KVMListClient
+    private lateinit var client: KvmListClient
 
     @MockkBean
     private lateinit var storage: Storage
@@ -47,8 +46,10 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
             kvmStorage.filter { it.osType == firstArg() }
                 .slice(secondArg<Int>() * (thirdArg<Int>() - 1) until secondArg<Int>() * thirdArg<Int>()).toList()
         }
-        every { client.getById(any()) } answers { kvmStorage.find { it.id == firstArg() } }
+        every { client.getById(any()) } answers { kvmStorage.find { it.id == firstArg() }?: throw NotFoundException("Kvm with id = ${firstArg<Int>()} doesn't exist") }
         every { client.create("kvm", any(), any()) } returns nextInt(1, 3)
+        every { client.create("kvm", Image("Ubuntu 20.04", "Linux", 8, 8), Config(10, 2, 4)) } throws Exception("Incompatible system requirements")
+        every { client.create("kvm", Image("Ubuntu 20.04", "Linux", 8, 8), Config(100, 4, 8)) } throws Exception("Unable to create kvm")
         every { storage.getImg(any()) } answers {
             images[firstArg()] ?: throw NoSuchElementException("No image with this id")
         }
@@ -64,16 +65,34 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
     init {
         feature("create kvm") {
             scenario("success") {
-                val request = create(CreateVmRequest("kvm", 0, 0))
+                val request = create(CreateVmRequest("kvm", 1, 1))
 
                 request should {
                     it.item.shouldNotBeNull()
-                    it.status shouldBe Status.IN_PROGRESS
+                    it.status shouldBe VmManagerStatus.IN_PROGRESS
                     it.comment shouldBe null
                 }
                 getKvmById(request.item!!) should {
                     it.item shouldBe kvmStorage.find { kvm -> kvm.id == request.item }
-                    it.status shouldBe Status.READY
+                    it.status shouldBe VmManagerStatus.READY
+                }
+            }
+            scenario("fail - reached limit of kvm storage"){
+                val request = create(CreateVmRequest("kvm", 0, 0))
+
+                request should {
+                    it.item.shouldBeNull()
+                    it.status shouldBe VmManagerStatus.DECLINED
+                    it.comment shouldBe "Unable to create kvm"
+                }
+            }
+            scenario("fail - incompatible system requirements"){
+                val request = create(CreateVmRequest("kvm", 0, 1))
+
+                request should {
+                    it.item.shouldBeNull()
+                    it.status shouldBe VmManagerStatus.DECLINED
+                    it.comment shouldBe "Incompatible system requirements"
                 }
             }
             scenario("fail - image not found") {
@@ -81,7 +100,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
 
                 request should {
                     it.item.shouldBeNull()
-                    it.status shouldBe Status.DECLINED
+                    it.status shouldBe VmManagerStatus.DECLINED
                     it.comment shouldBe "No image with this id"
                 }
             }
@@ -90,7 +109,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
 
                 request should {
                     it.item.shouldBeNull()
-                    it.status shouldBe Status.DECLINED
+                    it.status shouldBe VmManagerStatus.DECLINED
                     it.comment shouldBe "No config with this id"
                 }
             }
@@ -101,7 +120,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
 
                 kvm should {
                     it.item shouldBe kvmStorage.find { kvm -> kvm.id == 1 }
-                    it.status shouldBe Status.READY
+                    it.status shouldBe VmManagerStatus.READY
                 }
             }
             scenario("not found kvm with this id") {
@@ -110,7 +129,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 kvm should {
                     it.item.shouldBeNull()
                     it.status.shouldBeNull()
-                    it.comment shouldBe "Не существует KVM с данным id = 4"
+                    it.comment shouldBe "Kvm with id = 4 doesn't exist"
                 }
             }
         }
@@ -150,8 +169,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
             Image("Ubuntu 20.04", "Linux", 8, 8),
             Config(100, 4, 8),
             "Linux",
-            State.RUNNING,
-            VMStatus.DISK_ATTACHED
+            VmState.RUNNING,
+            VmStatus.DISK_ATTACHED
         ),
         Kvm(
             "kvm",
@@ -159,8 +178,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
             Image("Ubuntu 16.04", "Linux", 8, 8),
             Config(250, 2, 8),
             "Linux",
-            State.RUNNING,
-            VMStatus.DISK_ATTACHED
+            VmState.RUNNING,
+            VmStatus.DISK_ATTACHED
         ),
         Kvm(
             "kvm",
@@ -168,8 +187,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
             Image("Debian 7", "Linux", 4, 4),
             Config(10, 2, 4),
             "Linux",
-            State.RUNNING,
-            VMStatus.DISK_ATTACHED
+            VmState.RUNNING,
+            VmStatus.DISK_ATTACHED
         )
     )
 

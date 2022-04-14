@@ -6,14 +6,26 @@ import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
 import org.springframework.web.client.postForEntity
-import ru.tinkoff.fintech.homework.lesson6.vm.model.*
-import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateVMRequest
+import org.webjars.NotFoundException
+import ru.tinkoff.fintech.homework.lesson6.configuration.ControllerExceptionHandler
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Kvm
+import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateVmResponse
+import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmState
+import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmStatus
 
 @Service
-class KVMListClient(
+class KvmListClient(
     private val restTemplate: RestTemplate,
     @Value("\${kvm.list.address}") private val kvmListAddress: String
 ) {
+    companion object {
+        private const val GET_KVM_LIST = "/kvm_list?os_type={osType}&rows={rows}&page={page}"
+        private const val GET_KVM_BY_ID = "/kvm?id={id}"
+        private const val CREATE_KVM = "/kvm/create"
+    }
+
     fun getList(osType: String, rows: Int, page: Int): List<Kvm> {
         return restTemplate.getForObject(
             "$kvmListAddress$GET_KVM_LIST",
@@ -24,11 +36,12 @@ class KVMListClient(
     fun getById(id: Int): Kvm? = try {
         restTemplate.getForObject("$kvmListAddress$GET_KVM_BY_ID", id)
     } catch (e: NotFound) {
-        null
+        throw NotFoundException("Kvm with id = $id doesn't exist")
     }
 
     fun create(type: String, image: Image, config: Config): Int? {
-        val i: Int? = try {
+        try {
+            if (image.diskSizeRequirements > config.diskSize || image.ramRequirements > config.sizeRAM) throw Exception("Incompatible system requirements")
             val kvm =
                 Kvm(
                     type,
@@ -36,18 +49,13 @@ class KVMListClient(
                     image,
                     config,
                     "Linux",
-                    State.OFF,
-                    VMStatus.DISK_DETACHED
+                    VmState.OFF,
+                    VmStatus.DISK_DETACHED
                 )
-            val request = CreateVMRequest(kvm)
+            val request = CreateVmResponse(kvm)
             return restTemplate.postForEntity<Kvm>("$kvmListAddress$CREATE_KVM", request).body?.id
         } catch (e: Exception) {
-            null
+            throw Exception("Unable to create kvm")
         }
-        return i
     }
 }
-
-private const val GET_KVM_LIST = "/kvm_list?os_type={osType}&rows={rows}&page={page}"
-private const val GET_KVM_BY_ID = "/kvm?id={id}"
-private const val CREATE_KVM = "/kvm/create"
