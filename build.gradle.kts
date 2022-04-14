@@ -15,7 +15,6 @@ dependencies {
     implementation("org.junit.jupiter:junit-jupiter:5.8.2")
     implementation("org.testng:testng:7.5")
     implementation("io.kotest:kotest-runner-junit5-jvm:4.6.0")
-    implementation("io.kotest:kotest-runner-junit5-jvm:4.6.0")
     testImplementation("io.mockk:mockk:1.12.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")
@@ -39,12 +38,17 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.0")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.1.0")
     testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
