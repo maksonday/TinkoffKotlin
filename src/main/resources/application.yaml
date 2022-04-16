@@ -1,0 +1,9 @@
+spring:
+  application.name: VMPlugger
+  profiles.active: dev
+server.port: 9000
+
+connect.timeout.in.seconds: 30
+read.timeout.in.seconds: 60
+storage.address: http://localhost:9001
+kvm.list.address: http://localhost:9001
