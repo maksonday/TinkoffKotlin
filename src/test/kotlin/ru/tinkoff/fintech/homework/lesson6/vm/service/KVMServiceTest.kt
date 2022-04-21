@@ -25,7 +25,9 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.webjars.NotFoundException
 import ru.tinkoff.fintech.homework.lesson6.db.VmDao
-import ru.tinkoff.fintech.homework.lesson6.vm.model.*
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Kvm
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.*
 import ru.tinkoff.fintech.homework.lesson6.vm.service.client.Storage
 import kotlin.random.Random.Default.nextInt
@@ -48,10 +50,25 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
             kvmStorage.filter { it.osType == firstArg() }
                 .slice(secondArg<Int>() * (thirdArg<Int>() - 1) until secondArg<Int>() * thirdArg<Int>()).toList()
         }
-        every { vmDao.getById(any()) } answers { kvmStorage.find { it.id == firstArg() }?: throw NotFoundException("Kvm with id = ${firstArg<Int>()} doesn't exist") }
+        every { vmDao.getById(any()) } answers {
+            kvmStorage.find { it.id == firstArg() }
+                ?: throw NotFoundException("Kvm with id = ${firstArg<Int>()} doesn't exist")
+        }
         every { vmDao.create("kvm", any(), any()) } returns nextInt(1, 3)
-        every { vmDao.create("kvm", Image(1,"Ubuntu 20.04", "Linux", 8, 8), Config(2, 10, 2, 4)) } throws Exception("Incompatible system requirements")
-        every { vmDao.create("kvm", Image(1, "Ubuntu 20.04", "Linux", 8, 8), Config(1, 100, 4, 8)) } throws Exception("Unable to create kvm")
+        every {
+            vmDao.create(
+                "kvm",
+                Image(1, "Ubuntu 20.04", "Linux", 8, 8),
+                Config(2, 10, 2, 4)
+            )
+        } throws Exception("Incompatible system requirements")
+        every {
+            vmDao.create(
+                "kvm",
+                Image(1, "Ubuntu 20.04", "Linux", 8, 8),
+                Config(1, 100, 4, 8)
+            )
+        } throws Exception("Unable to create kvm")
         every { storage.getImg(any()) } answers {
             images[firstArg()] ?: throw NoSuchElementException("No image with this id")
         }
@@ -79,7 +96,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                     it.status shouldBe VmManagerStatus.READY
                 }
             }
-            scenario("fail - reached limit of kvm storage"){
+            scenario("fail - reached limit of kvm storage") {
                 val request = create(CreateVmRequest("kvm", 0, 0))
 
                 request should {
@@ -88,7 +105,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                     it.comment shouldBe "Unable to create kvm"
                 }
             }
-            scenario("fail - incompatible system requirements"){
+            scenario("fail - incompatible system requirements") {
                 val request = create(CreateVmRequest("kvm", 0, 1))
 
                 request should {
@@ -153,7 +170,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
     private fun getKvmById(id: Int): CreateResponse<Kvm> =
         mockMvc.get("/vm/kvm/{id}", id).readResponse()
 
-    private fun getKvmListWithParams(osType : String, rows : Int?, page : Int) : List<Kvm> = mockMvc.get("/vm/kvm_list", osType, rows, page) {
+    private fun getKvmListWithParams(osType: String, rows: Int?, page: Int): List<Kvm> =
+        mockMvc.get("/vm/kvm_list", osType, rows, page) {
             param("osType", osType)
             param("rows", rows.toString())
             param("page", page.toString())

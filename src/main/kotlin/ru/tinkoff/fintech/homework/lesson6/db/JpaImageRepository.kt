@@ -7,5 +7,6 @@ import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
 
 @Profile("jpa")
 @Repository
-interface JpaImageRepository : PagingAndSortingRepository<Image, Long> {
+interface JpaImageRepository : PagingAndSortingRepository<Image, Int> {
+    fun getImageById(id: Int): Image
 }

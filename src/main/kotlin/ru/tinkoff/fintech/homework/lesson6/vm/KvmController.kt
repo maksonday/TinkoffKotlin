@@ -1,7 +1,6 @@
 package ru.tinkoff.fintech.homework.lesson6.vm
 
 import org.springframework.web.bind.annotation.*
-import ru.tinkoff.fintech.homework.lesson6.vm.model.Kvm
 import ru.tinkoff.fintech.homework.lesson6.vm.model.Vm
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateResponse
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateVmRequest
@@ -19,7 +18,7 @@ class KvmController(private val kvmService: KvmService) {
         kvmService.getKvmList(osType, rows, page)
 
     @PostMapping("/create")
-    fun createKvm(@RequestBody request: CreateVmRequest): CreateResponse<Long> {
+    fun createKvm(@RequestBody request: CreateVmRequest): CreateResponse<Int> {
         return kvmService.create(request.imgId, request.configId)
     }
 

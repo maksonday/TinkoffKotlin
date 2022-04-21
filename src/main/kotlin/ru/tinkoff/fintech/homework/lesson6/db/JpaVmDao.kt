@@ -2,14 +2,13 @@ package ru.tinkoff.fintech.homework.lesson6.db
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
 import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
 import ru.tinkoff.fintech.homework.lesson6.vm.model.Kvm
-import ru.tinkoff.fintech.homework.lesson6.vm.model.Vm
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmState
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmStatus
-import java.awt.Taskbar
 
 @Profile("jpa")
 @Service
@@ -17,30 +16,29 @@ class JpaVmDao : VmDao {
     @Autowired
     private val repo: JpaVmRepository? = null
 
-    override fun getById(id: Int): Vm {
-        lateinit var result : Vm
+    override fun getById(id: Int): Kvm {
         try {
-            result = repo!!.findById(id.toLong()).orElse(null)
+            return repo!!.getKvmById(id)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("VM with this ID doesn't exist")
         }
-        catch (e : Exception){
-            throw IllegalArgumentException(e.message)
-        }
-        if (result != null) return result
-        else throw IllegalArgumentException("No kvm with this id")
     }
 
-    override fun create(type: String, image: Image, config: Config): Long {
-        try{
+    override fun create(type: String, image: Image, config: Config): Int {
+        try {
             val obj = repo!!.save(Kvm(type, null, image.id, config.id, "Linux", VmState.OFF, VmStatus.DISK_DETACHED))
-            if (obj.id != null) return obj.id!!
-            else throw Exception("Unable to create kvm")
-        }
-        catch (e : Exception){
-            throw Exception(e.message)
+            return obj.id!!
+        } catch (e: Exception) {
+            throw Exception("Unable to create VM")
         }
     }
 
-    override fun getList(osType: String, rows: Int, page: Int): List<Vm> {
-        TODO("Not yet implemented")
+    override fun getList(osType: String, rows: Int, page: Int): List<Kvm> {
+        try {
+            val pg = PageRequest.of(page - 1, rows)
+            return repo!!.getKvmByOsType(osType, pg).toList()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("No VMs with this osType")
+        }
     }
 }

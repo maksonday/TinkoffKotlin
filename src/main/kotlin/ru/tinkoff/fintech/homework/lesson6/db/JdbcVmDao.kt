@@ -1,6 +1,5 @@
 package ru.tinkoff.fintech.homework.lesson6.db
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
@@ -22,21 +21,20 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
         val response = jdbcTemplate.query("select * from vm where id = $id limit 1") { rs, _ ->
             Kvm(
                 rs.getString("type"),
-                rs.getLong("id"),
-                rs.getLong("imageId"),
-                rs.getLong("configId"),
+                rs.getInt("id"),
+                rs.getInt("imageId"),
+                rs.getInt("configId"),
                 rs.getString("osType"),
                 VmState.valueOf(rs.getString("state")),
                 VmStatus.valueOf(rs.getString("status"))
             )
         }
-        if (response.size != 0){
+        if (response.size != 0) {
             return response[0]
-        }
-        else throw IllegalArgumentException("VM with this ID doesn't exist")
+        } else throw IllegalArgumentException("VM with this ID doesn't exist")
     }
 
-    override fun create(type: String, image: Image, config : Config): Long {
+    override fun create(type: String, image: Image, config: Config): Int {
         val dataSource = jdbcTemplate.dataSource
         if (dataSource != null) {
             try {
@@ -44,14 +42,14 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
                         "values (?, ?, ?, ?, 'OFF', 'DISK_DETACHED')"
                 val ps = dataSource.connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
                 ps.setString(1, type)
-                ps.setLong(2, image.id!!)
-                ps.setLong(3, config.id!!)
+                ps.setInt(2, image.id!!)
+                ps.setInt(3, config.id!!)
                 ps.setString(4, "Linux")
                 ps.executeUpdate()
                 try {
                     val rs = ps.generatedKeys
                     if (rs.next()) {
-                        return rs.getLong(1)
+                        return rs.getInt(1)
                     }
                 } catch (s: SQLException) {
                     s.printStackTrace()
@@ -67,9 +65,9 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
         return jdbcTemplate.query("select * from vm where osType = '$osType' limit $rows offset $rows * ($page - 1)") { rs, _ ->
             Kvm(
                 rs.getString("type"),
-                rs.getLong("id"),
-                rs.getLong("imageId"),
-                rs.getLong("configId"),
+                rs.getInt("id"),
+                rs.getInt("imageId"),
+                rs.getInt("configId"),
                 rs.getString("osType"),
                 VmState.valueOf(rs.getString("state")),
                 VmStatus.valueOf(rs.getString("status"))

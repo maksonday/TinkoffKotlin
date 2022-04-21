@@ -18,9 +18,10 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.30")
+    implementation("org.hibernate:hibernate-core:5.3.2")
     implementation("org.junit.jupiter:junit-jupiter:5.8.2")
     implementation("com.h2database:h2:2.1.210")
-    //implementation("org.liquibase:liquibase-core:4.9.0")
     implementation("org.testng:testng:7.5")
     implementation("io.kotest:kotest-runner-junit5-jvm:4.6.0")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.6.6")

@@ -13,9 +13,9 @@ import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmManagerStatus
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmState
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmStatus
 
-@ActiveProfiles("jdbc")
+@ActiveProfiles("jpa")
 @SpringBootTest
-class JdbcTest(private val controller: KvmController) : FeatureSpec() {
+class JpaTest(private val controller: KvmController) : FeatureSpec() {
     init {
         feature("create kvm") {
             scenario("success") {

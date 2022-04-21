@@ -4,12 +4,12 @@ import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
-@Table(name = "CONFIGS")
+@Table(name = "configs")
 data class Config(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    val id: Long?,
+    val id: Int?,
     @Column(name = "diskSize", nullable = false)
     val diskSize: Int,
     @Column(name = "cores", nullable = false)

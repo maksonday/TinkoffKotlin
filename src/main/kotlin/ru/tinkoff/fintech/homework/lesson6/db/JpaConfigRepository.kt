@@ -7,5 +7,6 @@ import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
 
 @Profile("jpa")
 @Repository
-interface JpaConfigRepository : PagingAndSortingRepository<Config, Long> {
+interface JpaConfigRepository : PagingAndSortingRepository<Config, Int> {
+    fun getConfigById(id: Int): Config
 }

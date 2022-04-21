@@ -16,15 +16,19 @@ class JpaStorageDao : StorageDao {
     private val configRepo: JpaConfigRepository? = null
 
     override fun getConfig(id: Int): Config {
-        val result = configRepo!!.findById(id.toLong()).orElse(null)
-        if (result != null) return result
-        else throw IllegalArgumentException("No image with this id")
+        try {
+            return configRepo!!.getConfigById(id)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("No config with this id")
+        }
     }
 
     override fun getImg(id: Int): Image {
-        val result = imageRepo!!.findById(id.toLong()).orElse(null)
-        if (result != null) return result
-        else throw IllegalArgumentException("No image with this id")
+        try {
+            return imageRepo!!.getImageById(id)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("No image with this id")
+        }
     }
 
 
