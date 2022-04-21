@@ -6,6 +6,6 @@ import ru.tinkoff.fintech.homework.lesson6.vm.model.Vm
 
 interface VmDao {
     fun getById(id: Int): Vm
-    fun create(type: String, image: Image, config: Config): Int
+    fun create(type: String, image: Image, config: Config): Long
     fun getList(osType: String, rows: Int, page: Int): List<Vm>
 }

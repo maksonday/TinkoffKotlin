@@ -22,9 +22,9 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
         val response = jdbcTemplate.query("select * from vm where id = $id limit 1") { rs, _ ->
             Kvm(
                 rs.getString("type"),
-                rs.getInt("id"),
-                rs.getInt("imageId"),
-                rs.getInt("configId"),
+                rs.getLong("id"),
+                rs.getLong("imageId"),
+                rs.getLong("configId"),
                 rs.getString("osType"),
                 VmState.valueOf(rs.getString("state")),
                 VmStatus.valueOf(rs.getString("status"))
@@ -36,7 +36,7 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
         else throw IllegalArgumentException("VM with this ID doesn't exist")
     }
 
-    override fun create(type: String, image: Image, config : Config): Int {
+    override fun create(type: String, image: Image, config : Config): Long {
         val dataSource = jdbcTemplate.dataSource
         if (dataSource != null) {
             try {
@@ -44,14 +44,14 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
                         "values (?, ?, ?, ?, 'OFF', 'DISK_DETACHED')"
                 val ps = dataSource.connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
                 ps.setString(1, type)
-                ps.setInt(2, image.id!!)
-                ps.setInt(3, config.id!!)
+                ps.setLong(2, image.id!!)
+                ps.setLong(3, config.id!!)
                 ps.setString(4, "Linux")
                 ps.executeUpdate()
                 try {
                     val rs = ps.generatedKeys
                     if (rs.next()) {
-                        return rs.getInt(1)
+                        return rs.getLong(1)
                     }
                 } catch (s: SQLException) {
                     s.printStackTrace()
@@ -67,9 +67,9 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
         return jdbcTemplate.query("select * from vm where osType = '$osType' limit $rows offset $rows * ($page - 1)") { rs, _ ->
             Kvm(
                 rs.getString("type"),
-                rs.getInt("id"),
-                rs.getInt("imageId"),
-                rs.getInt("configId"),
+                rs.getLong("id"),
+                rs.getLong("imageId"),
+                rs.getLong("configId"),
                 rs.getString("osType"),
                 VmState.valueOf(rs.getString("state")),
                 VmStatus.valueOf(rs.getString("status"))

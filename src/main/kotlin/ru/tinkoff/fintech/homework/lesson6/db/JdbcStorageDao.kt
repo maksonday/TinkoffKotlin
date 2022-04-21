@@ -13,7 +13,7 @@ class JdbcStorageDao(private val jdbcTemplate: JdbcTemplate) : StorageDao {
     override fun getConfig(id: Int): Config {
         val response = jdbcTemplate.query("select * from configs where id = $id limit 1") { rs, _ ->
             Config(
-                rs.getInt("id"),
+                rs.getLong("id"),
                 rs.getInt("diskSize"),
                 rs.getInt("cores"),
                 rs.getInt("sizeRam"),
@@ -28,7 +28,7 @@ class JdbcStorageDao(private val jdbcTemplate: JdbcTemplate) : StorageDao {
     override fun getImg(id: Int): Image {
         val response =  jdbcTemplate.query("select * from images where id = $id limit 1") { rs, _ ->
             Image(
-                rs.getInt("id"),
+                rs.getLong("id"),
                 rs.getString("name"),
                 rs.getString("type"),
                 rs.getInt("diskSizeRequirements"),

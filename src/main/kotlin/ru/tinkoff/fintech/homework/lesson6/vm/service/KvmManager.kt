@@ -17,7 +17,7 @@ class KvmManager(
     fun getById(id: Int) = vmDao.getById(id)
 
 
-    fun create(imgId: Int, configId: Int): Int {
+    fun create(imgId: Int, configId: Int): Long {
         val image = getImageById(imgId)
         val config = getConfigById(configId)
         if (image.diskSizeRequirements > config.diskSize || image.ramRequirements > config.sizeRAM) throw Exception(

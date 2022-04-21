@@ -1,8 +1,6 @@
 spring:
   application.name: VMPlugger
-  profiles.active: jdbc
-  liquibase:
-    enabled: false
+  profiles.active: jpa
   datasource:
     username: SA
     password: ""
@@ -12,8 +10,14 @@ spring:
     database: h2
     hibernate:
       dialect: org.hibernate.dialect.H2Dialect
-      ddl-auto: create-drop
-    generate-ddl: on
+      ddl-auto: none
+      naming:
+        physical-strategy=org:
+          hibernate:
+            boot:
+              model:
+                naming:
+                  PhysicalNamingStrategyStandardImpl
 server.port: 9000
 
 connect.timeout.in.seconds: 30

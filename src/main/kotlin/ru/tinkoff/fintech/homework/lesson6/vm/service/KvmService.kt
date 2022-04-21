@@ -16,7 +16,7 @@ class KvmService(
         return kvmManager.getList(osType, rows, page)
     }
 
-    fun create(imgId: Int, configId: Int): CreateResponse<Int> =
+    fun create(imgId: Int, configId: Int): CreateResponse<Long> =
         try {
             val id = kvmManager.create(imgId, configId)
             CreateResponse(id, VmManagerStatus.IN_PROGRESS)
