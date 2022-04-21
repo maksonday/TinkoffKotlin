@@ -2,6 +2,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.5.31"
+    id ("org.jetbrains.kotlin.plugin.jpa") version "1.5.21"
+    id ("org.jetbrains.kotlin.plugin.allopen") version "1.5.21"
+}
+
+allOpen {
+    annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
 }
 
 group = "me.max"
@@ -13,8 +19,11 @@ repositories {
 
 dependencies {
     implementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    implementation("com.h2database:h2:2.1.210")
+    implementation("org.liquibase:liquibase-core:4.9.0")
     implementation("org.testng:testng:7.5")
     implementation("io.kotest:kotest-runner-junit5-jvm:4.6.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.6.6")
     testImplementation("io.mockk:mockk:1.12.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")

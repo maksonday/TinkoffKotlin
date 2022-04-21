@@ -2,6 +2,7 @@ package ru.tinkoff.fintech.homework.lesson6.vm
 
 import org.springframework.web.bind.annotation.*
 import ru.tinkoff.fintech.homework.lesson6.vm.model.Kvm
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Vm
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateResponse
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.CreateVmRequest
 import ru.tinkoff.fintech.homework.lesson6.vm.service.KvmService
@@ -14,7 +15,7 @@ class KvmController(private val kvmService: KvmService) {
         @RequestParam osType: String,
         @RequestParam rows: Int,
         @RequestParam page: Int
-    ): List<Kvm> =
+    ): List<Vm> =
         kvmService.getKvmList(osType, rows, page)
 
     @PostMapping("/create")
@@ -23,6 +24,6 @@ class KvmController(private val kvmService: KvmService) {
     }
 
     @GetMapping("/kvm/{id}")
-    fun getKvmById(@PathVariable id: Int): CreateResponse<Kvm> =
+    fun getKvmById(@PathVariable id: Int): CreateResponse<Vm> =
         kvmService.getKvmById(id)
 }
