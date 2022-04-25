@@ -4,10 +4,9 @@ import java.util.concurrent.Executor
 import java.util.concurrent.LinkedBlockingQueue
 
 class ThreadPool(count: Int) : Executor {
-    companion object {
-        const val SHUTDOWN_TIMEOUT = 60000L
+    companion object{
+        const val TIMEOUT = 10000L
     }
-
     private var queue = LinkedBlockingQueue<Runnable>()
     private var threadList = mutableListOf<WorkerThread>()
 
@@ -23,9 +22,8 @@ class ThreadPool(count: Int) : Executor {
             throw IllegalArgumentException("Amount of threads must be a positive number")
         }
         for (i in 0 until count) {
-            threadList.add(WorkerThread(queue))
-        }
-        for (thread in threadList) {
+            val thread = WorkerThread(queue)
+            threadList.add(thread)
             thread.start()
         }
     }
@@ -40,26 +38,15 @@ class ThreadPool(count: Int) : Executor {
     fun shutdown(): Boolean {
         for (thread in threadList) {
             thread.interrupt()
-        }
-
-        val startTime = System.currentTimeMillis()
-        var failingThread: String? = null
-
-        while (true) {
-            var result = true
-            for (thread in threadList) {
-                if (thread.isAlive) {
-                    result = false
-                    failingThread = thread.name
-                    break
-                }
+            val time = System.currentTimeMillis()
+            try {
+                thread.join(TIMEOUT)
+            } catch (e: Exception) {
+                println(e.message)
+                return false
             }
-            if (result) {
-                break
-            }
-            if (System.currentTimeMillis() - startTime > SHUTDOWN_TIMEOUT) {
-                if (failingThread != null) throw RuntimeException("An error occurred: can't stop thread ${failingThread}")
-                else throw RuntimeException("Something went wrong during shutdown")
+            if (System.currentTimeMillis() - time > TIMEOUT){
+                return false
             }
         }
         return true

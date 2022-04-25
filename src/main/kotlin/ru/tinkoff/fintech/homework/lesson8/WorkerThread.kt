@@ -12,16 +12,25 @@ class WorkerThread(private val queue: LinkedBlockingQueue<Runnable>) : Thread() 
                     else task = queue.remove()
                 }
                 if (task != null) {
-                    task!!.run()
+                    try {
+                        task!!.run()
+                    }
+                    catch (e : Exception){
+                        println("An error occurred in ${currentThread().name}: ${e.message}")
+                        throw e
+                    }
                     task = null
                 }
             }
         } catch (e: InterruptedException) {
             if (task != null) {
-                task!!.run()
+                try {
+                    task!!.run()
+                } catch (e: Exception) {
+                    println("An error occurred in ${currentThread().name}: ${e.message}")
+                    throw e
+                }
             }
-            currentThread().interrupt()
-            println("Thread with name \"${currentThread().name}\" finished working")
         }
     }
 }
