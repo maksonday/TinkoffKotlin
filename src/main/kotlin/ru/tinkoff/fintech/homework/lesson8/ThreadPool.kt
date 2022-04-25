@@ -3,10 +3,11 @@ package ru.tinkoff.fintech.homework.lesson8
 import java.util.concurrent.Executor
 import java.util.concurrent.LinkedBlockingQueue
 
-class ThreadPool(count: Int) : Executor {
+class ThreadPool(count: Int, private var timeout : Long? = null) : Executor {
     companion object{
         const val TIMEOUT = 10000L
     }
+
     private var queue = LinkedBlockingQueue<Runnable>()
     private var threadList = mutableListOf<WorkerThread>()
 
@@ -20,6 +21,9 @@ class ThreadPool(count: Int) : Executor {
         }
         require(count > 0) {
             throw IllegalArgumentException("Amount of threads must be a positive number")
+        }
+        if (timeout == null){
+            timeout = TIMEOUT
         }
         for (i in 0 until count) {
             val thread = WorkerThread(queue)
@@ -40,12 +44,12 @@ class ThreadPool(count: Int) : Executor {
             thread.interrupt()
             val time = System.currentTimeMillis()
             try {
-                thread.join(TIMEOUT)
+                thread.join(timeout!!)
             } catch (e: Exception) {
                 println(e.message)
                 return false
             }
-            if (System.currentTimeMillis() - time > TIMEOUT){
+            if (System.currentTimeMillis() - time > timeout!!){
                 return false
             }
         }
