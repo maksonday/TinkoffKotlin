@@ -19,7 +19,7 @@ class JpaTest(private val controller: KvmController) : FeatureSpec() {
     init {
         feature("create kvm") {
             scenario("success") {
-                val request = CreateVmRequest("kvm", 1, 1)
+                val request = CreateVmRequest("kvm", 1, 1, "Linux")
 
                 val result = controller.createKvm(request)
 
@@ -31,7 +31,7 @@ class JpaTest(private val controller: KvmController) : FeatureSpec() {
             }
 
             scenario("failed - no image with this id") {
-                val request = CreateVmRequest("kvm", 4, 1)
+                val request = CreateVmRequest("kvm", 4, 1, "Linux")
 
                 val result = controller.createKvm(request)
 
@@ -43,7 +43,7 @@ class JpaTest(private val controller: KvmController) : FeatureSpec() {
             }
 
             scenario("failed - no config with this id") {
-                val request = CreateVmRequest("kvm", 1, 4)
+                val request = CreateVmRequest("kvm", 1, 4, "Linux")
 
                 val result = controller.createKvm(request)
 
@@ -55,7 +55,7 @@ class JpaTest(private val controller: KvmController) : FeatureSpec() {
             }
 
             scenario("fail - incompatible system requirements") {
-                val request = CreateVmRequest("kvm", 1, 2)
+                val request = CreateVmRequest("kvm", 1, 2, "Linux")
 
                 val result = controller.createKvm(request)
 
@@ -96,7 +96,7 @@ class JpaTest(private val controller: KvmController) : FeatureSpec() {
         feature("get kvm list with pagination and osType") {
             scenario("success - found some fitting results") {
                 for (i in 1..10) {
-                    controller.createKvm(CreateVmRequest("kvm", 1, 3))
+                    controller.createKvm(CreateVmRequest("kvm", 1, 3, "Linux"))
                 }
                 val result = controller.getKvmListWithParams("Linux", 10, 1)
 

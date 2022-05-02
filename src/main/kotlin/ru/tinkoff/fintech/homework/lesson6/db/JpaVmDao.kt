@@ -1,6 +1,5 @@
 package ru.tinkoff.fintech.homework.lesson6.db
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -12,10 +11,7 @@ import ru.tinkoff.fintech.homework.lesson6.vm.model.external.VmStatus
 
 @Profile("jpa")
 @Service
-class JpaVmDao : VmDao {
-    @Autowired
-    private val repo: JpaVmRepository? = null
-
+class JpaVmDao(private val repo: JpaVmRepository? = null) : VmDao {
     override fun getById(id: Int): Kvm {
         try {
             return repo!!.getKvmById(id)
@@ -24,9 +20,9 @@ class JpaVmDao : VmDao {
         }
     }
 
-    override fun create(type: String, image: Image, config: Config): Int {
+    override fun create(type: String, image: Image, config: Config, osType: String): Int {
         try {
-            val obj = repo!!.save(Kvm(type, null, image.id, config.id, "Linux", VmState.OFF, VmStatus.DISK_DETACHED))
+            val obj = repo!!.save(Kvm(type, null, image.id, config.id, osType, VmState.OFF, VmStatus.DISK_DETACHED))
             return obj.id!!
         } catch (e: Exception) {
             throw Exception("Unable to create VM")

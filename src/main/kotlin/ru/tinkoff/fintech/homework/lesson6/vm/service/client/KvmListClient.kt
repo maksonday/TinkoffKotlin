@@ -41,7 +41,7 @@ class KvmListClient(
         throw NotFoundException("Kvm with id = $id doesn't exist")
     }
 
-    override fun create(type: String, image: Image, config: Config): Int {
+    override fun create(type: String, image: Image, config: Config, osType: String): Int {
         try {
             val kvm =
                 Kvm(
@@ -49,7 +49,7 @@ class KvmListClient(
                     null,
                     image.id,
                     config.id,
-                    "Linux",
+                    osType,
                     VmState.OFF,
                     VmStatus.DISK_DETACHED
                 )

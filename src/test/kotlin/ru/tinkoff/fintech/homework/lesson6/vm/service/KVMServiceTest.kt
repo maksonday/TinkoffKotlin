@@ -54,19 +54,21 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
             kvmStorage.find { it.id == firstArg() }
                 ?: throw NotFoundException("Kvm with id = ${firstArg<Int>()} doesn't exist")
         }
-        every { vmDao.create("kvm", any(), any()) } returns nextInt(1, 3)
+        every { vmDao.create("kvm", any(), any(), "Linux") } returns nextInt(1, 3)
         every {
             vmDao.create(
                 "kvm",
                 Image(1, "Ubuntu 20.04", "Linux", 8, 8),
-                Config(2, 10, 2, 4)
+                Config(2, 10, 2, 4),
+                "Linux"
             )
         } throws Exception("Incompatible system requirements")
         every {
             vmDao.create(
                 "kvm",
                 Image(1, "Ubuntu 20.04", "Linux", 8, 8),
-                Config(1, 100, 4, 8)
+                Config(1, 100, 4, 8),
+                "Linux"
             )
         } throws Exception("Unable to create kvm")
         every { storage.getImg(any()) } answers {
@@ -84,7 +86,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
     init {
         feature("create kvm") {
             scenario("success") {
-                val request = create(CreateVmRequest("kvm", 1, 0))
+                val request = create(CreateVmRequest("kvm", 1, 0, "Linux"))
 
                 request should {
                     it.item.shouldNotBeNull()
@@ -97,7 +99,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 }
             }
             scenario("fail - reached limit of kvm storage") {
-                val request = create(CreateVmRequest("kvm", 0, 0))
+                val request = create(CreateVmRequest("kvm", 0, 0, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -106,7 +108,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 }
             }
             scenario("fail - incompatible system requirements") {
-                val request = create(CreateVmRequest("kvm", 0, 1))
+                val request = create(CreateVmRequest("kvm", 0, 1, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -115,7 +117,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 }
             }
             scenario("fail - image not found") {
-                val request = create(CreateVmRequest("kvm", -1, 0))
+                val request = create(CreateVmRequest("kvm", -1, 0, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -124,7 +126,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 }
             }
             scenario("fail - config not found") {
-                val request = create(CreateVmRequest("kvm", 0, -1))
+                val request = create(CreateVmRequest("kvm", 0, -1, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()

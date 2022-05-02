@@ -1,6 +1,5 @@
 package ru.tinkoff.fintech.homework.lesson6.db
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
@@ -8,13 +7,10 @@ import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
 
 @Profile("jpa")
 @Service
-class JpaStorageDao : StorageDao {
-    @Autowired
-    private val imageRepo: JpaImageRepository? = null
-
-    @Autowired
+class JpaStorageDao(
+    private val imageRepo: JpaImageRepository? = null,
     private val configRepo: JpaConfigRepository? = null
-
+) : StorageDao {
     override fun getConfig(id: Int): Config {
         try {
             return configRepo!!.getConfigById(id)

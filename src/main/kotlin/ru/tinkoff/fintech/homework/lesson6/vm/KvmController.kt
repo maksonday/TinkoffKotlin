@@ -19,7 +19,7 @@ class KvmController(private val kvmService: KvmService) {
 
     @PostMapping("/create")
     fun createKvm(@RequestBody request: CreateVmRequest): CreateResponse<Int> {
-        return kvmService.create(request.imgId, request.configId)
+        return kvmService.create(request.imgId, request.configId, request.osType)
     }
 
     @GetMapping("/kvm/{id}")

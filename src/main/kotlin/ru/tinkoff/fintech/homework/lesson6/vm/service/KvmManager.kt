@@ -17,14 +17,14 @@ class KvmManager(
     fun getById(id: Int) = vmDao.getById(id)
 
 
-    fun create(imgId: Int, configId: Int): Int {
+    fun create(imgId: Int, configId: Int, osType: String): Int {
         val image = getImageById(imgId)
         val config = getConfigById(configId)
         if (image.diskSizeRequirements > config.diskSize || image.ramRequirements > config.sizeRAM) throw Exception(
             "Incompatible system requirements"
         )
         try {
-            return vmDao.create("kvm", image, config)
+            return vmDao.create("kvm", image, config, osType)
         } catch (e: Exception) {
             throw Exception(e.message)
         }

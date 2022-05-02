@@ -18,23 +18,31 @@ import java.sql.Statement
 @Service
 class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
     override fun getById(id: Int): Vm {
-        val response = jdbcTemplate.query("select * from vm where id = $id limit 1") { rs, _ ->
-            Kvm(
-                rs.getString("type"),
-                rs.getInt("id"),
-                rs.getInt("imageId"),
-                rs.getInt("configId"),
-                rs.getString("osType"),
-                VmState.valueOf(rs.getString("state")),
-                VmStatus.valueOf(rs.getString("status"))
-            )
-        }
-        if (response.size != 0) {
-            return response[0]
-        } else throw IllegalArgumentException("VM with this ID doesn't exist")
+        val dataSource = jdbcTemplate.dataSource
+        if (dataSource != null) {
+            try {
+                val selectSql = "select * from vm where id = ? limit 1"
+                val ps = dataSource.connection.prepareStatement(selectSql)
+                ps.setInt(1, id)
+                val rs = ps.executeQuery()
+                if (rs.next()) {
+                    return Kvm(
+                        rs.getString("type"),
+                        rs.getInt("id"),
+                        rs.getInt("imageId"),
+                        rs.getInt("configId"),
+                        rs.getString("osType"),
+                        VmState.valueOf(rs.getString("state")),
+                        VmStatus.valueOf(rs.getString("status"))
+                    )
+                } else throw IllegalArgumentException("VM with this ID doesn't exist")
+            } catch (e: SQLException) {
+                throw Exception(e.message)
+            }
+        } else throw Exception("Couldn't establish connection")
     }
 
-    override fun create(type: String, image: Image, config: Config): Int {
+    override fun create(type: String, image: Image, config: Config, osType: String): Int {
         val dataSource = jdbcTemplate.dataSource
         if (dataSource != null) {
             try {
@@ -44,35 +52,46 @@ class JdbcVmDao(private val jdbcTemplate: JdbcTemplate) : VmDao {
                 ps.setString(1, type)
                 ps.setInt(2, image.id!!)
                 ps.setInt(3, config.id!!)
-                ps.setString(4, "Linux")
+                ps.setString(4, osType)
                 ps.executeUpdate()
-                try {
-                    val rs = ps.generatedKeys
-                    if (rs.next()) {
-                        return rs.getInt(1)
-                    }
-                } catch (s: SQLException) {
-                    s.printStackTrace()
-                }
+                val rs = ps.generatedKeys
+                if (rs.next()) {
+                    return rs.getInt(1)
+                } else throw Exception("Unable to create kvm")
             } catch (e: SQLException) {
-                e.printStackTrace()
+                throw Exception(e.message)
             }
         } else throw Exception("Couldn't establish connection")
-        throw Exception("Unable to create kvm")
     }
 
     override fun getList(osType: String, rows: Int, page: Int): List<Vm> {
-        return jdbcTemplate.query("select * from vm where osType = '$osType' limit $rows offset $rows * ($page - 1)") { rs, _ ->
-            Kvm(
-                rs.getString("type"),
-                rs.getInt("id"),
-                rs.getInt("imageId"),
-                rs.getInt("configId"),
-                rs.getString("osType"),
-                VmState.valueOf(rs.getString("state")),
-                VmStatus.valueOf(rs.getString("status"))
-            )
-        }
+        val response = mutableListOf<Vm>()
+        val dataSource = jdbcTemplate.dataSource
+        if (dataSource != null) {
+            try {
+                val selectSql = "select * from vm where osType = ? limit ? offset ?"
+                val ps = dataSource.connection.prepareStatement(selectSql)
+                ps.setString(1, osType)
+                ps.setInt(2, rows)
+                ps.setInt(3, rows * (page - 1))
+                val rs = ps.executeQuery()
+                while (rs.next()) {
+                    response.add(
+                        Kvm(
+                            rs.getString("type"),
+                            rs.getInt("id"),
+                            rs.getInt("imageId"),
+                            rs.getInt("configId"),
+                            rs.getString("osType"),
+                            VmState.valueOf(rs.getString("state")),
+                            VmStatus.valueOf(rs.getString("status"))
+                        )
+                    )
+                }
+            } catch (e: SQLException) {
+                throw Exception(e.message)
+            }
+        } else throw Exception("Couldn't establish connection")
+        return response
     }
-
 }

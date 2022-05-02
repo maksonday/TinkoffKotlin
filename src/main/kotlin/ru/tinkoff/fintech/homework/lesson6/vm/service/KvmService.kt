@@ -16,9 +16,9 @@ class KvmService(
         return kvmManager.getList(osType, rows, page)
     }
 
-    fun create(imgId: Int, configId: Int): CreateResponse<Int> =
+    fun create(imgId: Int, configId: Int, osType: String): CreateResponse<Int> =
         try {
-            val id = kvmManager.create(imgId, configId)
+            val id = kvmManager.create(imgId, configId, osType)
             CreateResponse(id, VmManagerStatus.IN_PROGRESS)
         } catch (e: Exception) {
             exceptionHandler.handleException(e)

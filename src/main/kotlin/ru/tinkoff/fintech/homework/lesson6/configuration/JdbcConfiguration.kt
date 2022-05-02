@@ -13,7 +13,7 @@ import javax.sql.DataSource
 @Configuration
 open class JdbcConfiguration {
     @Bean
-    open fun dataSource(): DataSource? {
+    open fun dataSource(): DataSource {
         return EmbeddedDatabaseBuilder()
             .setType(EmbeddedDatabaseType.H2).build()
     }
