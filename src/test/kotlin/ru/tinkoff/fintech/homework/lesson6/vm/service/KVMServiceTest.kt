@@ -18,23 +18,27 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActionsDsl
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import org.webjars.NotFoundException
-import ru.tinkoff.fintech.homework.lesson6.vm.model.*
+import ru.tinkoff.fintech.homework.lesson6.db.VmDao
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Config
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Image
+import ru.tinkoff.fintech.homework.lesson6.vm.model.Kvm
 import ru.tinkoff.fintech.homework.lesson6.vm.model.external.*
-import ru.tinkoff.fintech.homework.lesson6.vm.service.client.KvmListClient
 import ru.tinkoff.fintech.homework.lesson6.vm.service.client.Storage
 import kotlin.random.Random.Default.nextInt
 import kotlin.text.Charsets.UTF_8
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("dev")
 @AutoConfigureMockMvc
 class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: ObjectMapper) : FeatureSpec() {
     @MockkBean
-    private lateinit var client: KvmListClient
+    private lateinit var vmDao: VmDao
 
     @MockkBean
     private lateinit var storage: Storage
@@ -42,14 +46,31 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
     override fun extensions(): List<Extension> = listOf(SpringExtension)
 
     override fun beforeEach(testCase: TestCase) {
-        every { client.getList(any(), any(), any()) } answers {
+        every { vmDao.getList(any(), any(), any()) } answers {
             kvmStorage.filter { it.osType == firstArg() }
                 .slice(secondArg<Int>() * (thirdArg<Int>() - 1) until secondArg<Int>() * thirdArg<Int>()).toList()
         }
-        every { client.getById(any()) } answers { kvmStorage.find { it.id == firstArg() }?: throw NotFoundException("Kvm with id = ${firstArg<Int>()} doesn't exist") }
-        every { client.create("kvm", any(), any()) } returns nextInt(1, 3)
-        every { client.create("kvm", Image("Ubuntu 20.04", "Linux", 8, 8), Config(10, 2, 4)) } throws Exception("Incompatible system requirements")
-        every { client.create("kvm", Image("Ubuntu 20.04", "Linux", 8, 8), Config(100, 4, 8)) } throws Exception("Unable to create kvm")
+        every { vmDao.getById(any()) } answers {
+            kvmStorage.find { it.id == firstArg() }
+                ?: throw NotFoundException("Kvm with id = ${firstArg<Int>()} doesn't exist")
+        }
+        every { vmDao.create("kvm", any(), any(), "Linux") } returns nextInt(1, 3)
+        every {
+            vmDao.create(
+                "kvm",
+                Image(1, "Ubuntu 20.04", "Linux", 8, 8),
+                Config(2, 10, 2, 4),
+                "Linux"
+            )
+        } throws Exception("Incompatible system requirements")
+        every {
+            vmDao.create(
+                "kvm",
+                Image(1, "Ubuntu 20.04", "Linux", 8, 8),
+                Config(1, 100, 4, 8),
+                "Linux"
+            )
+        } throws Exception("Unable to create kvm")
         every { storage.getImg(any()) } answers {
             images[firstArg()] ?: throw NoSuchElementException("No image with this id")
         }
@@ -65,7 +86,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
     init {
         feature("create kvm") {
             scenario("success") {
-                val request = create(CreateVmRequest("kvm", 1, 1))
+                val request = create(CreateVmRequest("kvm", 1, 0, "Linux"))
 
                 request should {
                     it.item.shouldNotBeNull()
@@ -77,8 +98,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                     it.status shouldBe VmManagerStatus.READY
                 }
             }
-            scenario("fail - reached limit of kvm storage"){
-                val request = create(CreateVmRequest("kvm", 0, 0))
+            scenario("fail - reached limit of kvm storage") {
+                val request = create(CreateVmRequest("kvm", 0, 0, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -86,8 +107,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                     it.comment shouldBe "Unable to create kvm"
                 }
             }
-            scenario("fail - incompatible system requirements"){
-                val request = create(CreateVmRequest("kvm", 0, 1))
+            scenario("fail - incompatible system requirements") {
+                val request = create(CreateVmRequest("kvm", 0, 1, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -96,7 +117,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 }
             }
             scenario("fail - image not found") {
-                val request = create(CreateVmRequest("kvm", -1, 0))
+                val request = create(CreateVmRequest("kvm", -1, 0, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -105,7 +126,7 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
                 }
             }
             scenario("fail - config not found") {
-                val request = create(CreateVmRequest("kvm", 0, -1))
+                val request = create(CreateVmRequest("kvm", 0, -1, "Linux"))
 
                 request should {
                     it.item.shouldBeNull()
@@ -151,7 +172,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
     private fun getKvmById(id: Int): CreateResponse<Kvm> =
         mockMvc.get("/vm/kvm/{id}", id).readResponse()
 
-    private fun getKvmListWithParams(osType : String, rows : Int?, page : Int) : List<Kvm> = mockMvc.get("/vm/kvm_list", osType, rows, page) {
+    private fun getKvmListWithParams(osType: String, rows: Int?, page: Int): List<Kvm> =
+        mockMvc.get("/vm/kvm_list", osType, rows, page) {
             param("osType", osType)
             param("rows", rows.toString())
             param("page", page.toString())
@@ -166,8 +188,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
         Kvm(
             "kvm",
             1,
-            Image("Ubuntu 20.04", "Linux", 8, 8),
-            Config(100, 4, 8),
+            1,
+            1,
             "Linux",
             VmState.RUNNING,
             VmStatus.DISK_ATTACHED
@@ -175,8 +197,8 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
         Kvm(
             "kvm",
             2,
-            Image("Ubuntu 16.04", "Linux", 8, 8),
-            Config(250, 2, 8),
+            2,
+            3,
             "Linux",
             VmState.RUNNING,
             VmStatus.DISK_ATTACHED
@@ -184,23 +206,25 @@ class KVMServiceTest(private val mockMvc: MockMvc, private val objectMapper: Obj
         Kvm(
             "kvm",
             3,
-            Image("Debian 7", "Linux", 4, 4),
-            Config(10, 2, 4),
+            3,
+            2,
             "Linux",
             VmState.RUNNING,
             VmStatus.DISK_ATTACHED
         )
     )
 
-    private val images = mapOf(
-        0 to Image("Ubuntu 20.04", "Linux", 8, 8),
-        1 to Image("Ubuntu 16.04", "Linux", 8, 8),
-        2 to Image("Debian 7", "Linux", 4, 4)
-    )
+    companion object {
+        private val images = mapOf(
+            0 to Image(1, "Ubuntu 20.04", "Linux", 8, 8),
+            1 to Image(2, "Ubuntu 16.04", "Linux", 8, 8),
+            2 to Image(3, "Debian 7", "Linux", 4, 4)
+        )
 
-    private val configs = mapOf(
-        0 to Config(100, 4, 8),
-        1 to Config(10, 2, 4),
-        2 to Config(250, 4, 16),
-    )
+        private val configs = mapOf(
+            0 to Config(1, 100, 4, 8),
+            1 to Config(2, 10, 2, 4),
+            2 to Config(3, 250, 4, 16),
+        )
+    }
 }
