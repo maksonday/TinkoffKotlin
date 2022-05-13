@@ -39,7 +39,7 @@ class ThreadPoolTest {
         assertFailsWith<IllegalArgumentException>(
             message = "Amount of threads must be a positive number",
             block = {
-                val threadPool = ThreadPool(0)
+                ThreadPool(0)
             }
         )
     }

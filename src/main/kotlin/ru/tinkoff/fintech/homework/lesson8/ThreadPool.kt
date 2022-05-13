@@ -8,8 +8,8 @@ class ThreadPool(count: Int, private var timeout : Long? = null) : Executor {
         const val TIMEOUT = 10000L
     }
 
-    private var queue = LinkedBlockingQueue<Runnable>()
-    private var threadList = mutableListOf<WorkerThread>()
+    private val queue = LinkedBlockingQueue<Runnable>()
+    private val threadList = mutableListOf<WorkerThread>()
 
     init {
         require(count <= Runtime.getRuntime().availableProcessors()) {
