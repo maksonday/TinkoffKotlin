@@ -16,3 +16,4 @@ connect.timeout.in.seconds: 30
 read.timeout.in.seconds: 60
 storage.address: http://localhost:9001
 kvm.list.address: http://localhost:9001
+registrator.address: http://domain_register

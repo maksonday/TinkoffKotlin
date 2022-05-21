@@ -27,3 +27,13 @@ CREATE TABLE vm
     CONSTRAINT FkImage FOREIGN KEY (imageId) REFERENCES images (id),
     CONSTRAINT FkConfig FOREIGN KEY (configId) REFERENCES configs (id)
 );
+
+CREATE TABLE domains
+(
+    id       SERIAL PRIMARY KEY,
+    name     varchar(255),
+    created  varchar(255),
+    fetched  varchar(255),
+    paidTill varchar(255),
+    freeDate varchar(255)
+);
