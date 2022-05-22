@@ -92,7 +92,7 @@ class AsyncTest(private val domainController: DomainController) : FeatureSpec() 
 
                 domain should {
                     it.item shouldBe null
-                    it.comment shouldMatch "(Domain with this ID doesn't exist)|(Cannot fetch domain info, please try later)".toRegex()
+                    it.comment shouldMatch "(Domain with this ID doesn't exist)|(Cannot fetch domain info, please try later).".toRegex()
                 }
             }
         }
