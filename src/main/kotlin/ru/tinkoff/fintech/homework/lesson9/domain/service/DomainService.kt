@@ -10,6 +10,8 @@ import ru.tinkoff.fintech.homework.lesson9.db.DomainDao
 import ru.tinkoff.fintech.homework.lesson9.domain.model.Domain
 import ru.tinkoff.fintech.homework.lesson9.domain.model.external.CreateResponse
 import ru.tinkoff.fintech.homework.lesson9.domain.service.external.DomainRegistrationService
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class DomainService(
@@ -20,10 +22,14 @@ class DomainService(
 
     fun getById(id: Int): CreateResponse<Domain> = try {
         val domain = domainDao.getById(id)
-        if (domain.fetched != null){
-            CreateResponse(domain, null)
-        }
-        else{
+        if (domain.fetched != null) {
+            if (domain.created != null) {
+                CreateResponse(domain, null)
+            } else {
+                domainDao.delete(id)
+                CreateResponse(null, "Error: failed to create domain")
+            }
+        } else {
             throw Exception("Cannot fetch domain info, please try later.")
         }
     } catch (e: Exception) {
@@ -34,33 +40,38 @@ class DomainService(
     fun create(domainName: String): CreateResponse<Domain> =
         try {
             var id: Int? = null
-                CoroutineScope(Dispatchers.Default).launch {
-                    withContext(Dispatchers.IO) {
-                        id = domainDao.create(domainName)
-                    }
-                    if (id != null) {
-                        val responseDomain = domainRegistrationService.createDomain(id!!, domainName)
-                        if (responseDomain != null) {
-                            withContext(Dispatchers.IO) {
-                                domainDao.update(
-                                    id!!,
-                                    responseDomain.created,
-                                    responseDomain.fetched,
-                                    responseDomain.paidTill,
-                                    responseDomain.freeDate
-                                )
-                            }
-                        } else {
-                            withContext(Dispatchers.IO) {
-                                domainDao.delete(id!!)
-                            }
-                            throw Exception("An error occurred while creating domain on registrator's side")
-                        }
-                    } else {
-                        throw Exception("Cannot create domain: database error")
-                    }
+            CoroutineScope(Dispatchers.Default).launch {
+                withContext(Dispatchers.IO) {
+                    id = domainDao.create(domainName)
                 }
-                CreateResponse(Domain(id, domainName, null, null, null, null), "OK")
+                if (id != null) {
+                    try {
+                        val responseDomain = domainRegistrationService.createDomain(id!!, domainName)
+                        withContext(Dispatchers.IO) {
+                            domainDao.update(
+                                id!!,
+                                responseDomain.created,
+                                responseDomain.fetched,
+                                responseDomain.paidTill,
+                                responseDomain.freeDate
+                            )
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.IO) {
+                            domainDao.update(
+                                id!!,
+                                null,
+                                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")),
+                                null,
+                                null
+                            )
+                        }
+                    }
+                } else {
+                    throw Exception("Cannot create domain: database error")
+                }
+            }
+            CreateResponse(Domain(id, domainName, null, null, null, null), "OK")
         } catch (e: Exception) {
             exceptionHandler.handleException(e)
             CreateResponse(Domain(null, domainName, null, null, null, null), "Error")
