@@ -3,7 +3,7 @@ package ru.tinkoff.fintech.homework.lesson10.model.notifications
 class EmailNotification : Notification {
     override fun sendNotification(message: String) {
         try{
-            TODO("Not yet implemented")
+            println("EMAIL: $message")
         }
         catch (e : Exception){
             throw Exception(e.message)
