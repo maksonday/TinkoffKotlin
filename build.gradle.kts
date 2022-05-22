@@ -52,6 +52,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-activemq:2.7.0")
     implementation("org.springframework:spring-jms:5.3.20")
     implementation("org.apache.activemq:activemq-broker:5.17.1")
+    implementation("org.awaitility:awaitility:4.2.0")
+    implementation("org.awaitility:awaitility-kotlin:4.2.0")
 }
 
 tasks.test {
