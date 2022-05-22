@@ -49,7 +49,10 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.1.0")
     testImplementation("io.mockk:mockk:1.12.3")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.6.10")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:2.6.7")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.1")
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-x86_64")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.52.Final")
 }
 
 tasks.test {
