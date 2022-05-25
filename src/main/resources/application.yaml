@@ -8,10 +8,9 @@ spring:
       naming.physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    username: postgres
-    password: Evilcore9320
-    url: jdbc:postgresql://localhost:5432/postgres
-
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL}
 server.port: 9000
 query.link: 'https://rest.db.ripe.net/search.json?source=ripe&flags=no-referenced&type-filter=inetnum&query-string='
 cron.expression: '0 0 9 * * *'
