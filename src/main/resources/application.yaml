@@ -1,7 +1,7 @@
 spring:
   profiles:
     active: whois
-  application.name: VMPlugger
+  application.name: Whois
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,11 +14,6 @@ spring:
 
 server.port: 9000
 query.link: 'https://rest.db.ripe.net/search.json?source=ripe&flags=no-referenced&type-filter=inetnum&query-string='
-connect.timeout.in.seconds: 5
-read.timeout.in.seconds: 60
-storage.address: http://localhost:9001
-kvm.list.address: http://localhost:9001
-registrator.address: http://localhost:9000/domain/register
 cron.expression: '0 0 9 * * *'
 mail-sender:
   host: ${MAIL_SENDER_HOST}
