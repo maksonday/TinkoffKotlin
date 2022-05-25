@@ -44,13 +44,8 @@ class Fetcher {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString()).body()
         val jsonObj = JSONObject(response)
         val map = jsonObj.toMap()
-        val converted = convertResponse(map)
-        converted.forEach {
-            if (it.key != "roleLink" && it.key != "personLink") {
-                //println("${it.key} : ${it.value}")
-            }
-        }
-        return converted
+
+        return convertResponse(map)
     }
 
     private fun JSONObject.toMap(): Map<String, *> = keys().asSequence().associateWith { s ->
