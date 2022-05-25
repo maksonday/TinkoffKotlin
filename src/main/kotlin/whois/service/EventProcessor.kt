@@ -10,21 +10,26 @@ import whois.model.Event
 import whois.model.EventStatus
 import whois.model.EventType
 import whois.model.external.EmailNotification
-import java.lang.Thread.sleep
 import javax.jms.Queue
 
 @Profile("whois")
 @Service
-class EventProcessor(private val repo : EventRepository, private val jmsTemplate: JmsTemplate, private val queue : Queue, private val domainDao: DomainDao, private val emailSenderService: EmailNotification) {
+class EventProcessor(
+    private val repo: EventRepository,
+    private val jmsTemplate: JmsTemplate,
+    private val queue: Queue,
+    private val domainDao: DomainDao,
+    private val emailSenderService: EmailNotification
+) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun checkProlongations(){
+    fun checkProlongations() {
         val domainsToProlong = domainDao.getDomainsToProlong()
         if (domainsToProlong != null) {
-            for (i in domainsToProlong){
+            for (i in domainsToProlong) {
                 val tmpList = mutableListOf<String>()
                 tmpList.add(i.first)
-                i.second.forEach{
+                i.second.forEach {
                     tmpList.add(it)
                 }
                 repo.save(Event(null, EventType.EMAIL, EventStatus.NEW, tmpList.joinToString(separator = ";")))
@@ -32,21 +37,20 @@ class EventProcessor(private val repo : EventRepository, private val jmsTemplate
         }
     }
 
-    fun processNewEvents(){
+    fun processNewEvents() {
         val eventList = repo.findByStatus(EventStatus.NEW)
-        for (event in eventList){
+        for (event in eventList) {
             try {
                 jmsTemplate.convertAndSend(queue, event)
                 event.status = EventStatus.IN_PROCESS
-            }
-            catch (e : Exception){
+            } catch (e: Exception) {
                 event.status = EventStatus.ERROR
             }
             updateEvent(event)
         }
     }
 
-    fun processEvent(event: Event){
+    fun processEvent(event: Event) {
         when (event.type) {
             EventType.EMAIL -> {
                 emailSenderService.sendNotification(event.body)
@@ -56,23 +60,22 @@ class EventProcessor(private val repo : EventRepository, private val jmsTemplate
         updateEvent(event)
     }
 
-    fun handleFailedEvent(event: Event, message: String?){
+    fun handleFailedEvent(event: Event, message: String?) {
         event.status = EventStatus.ERROR
         updateEvent(event)
         if (message != null) log("${event.type}: $message")
         else log("${event.type}: something went wrong")
     }
 
-    private fun updateEvent(event : Event){
+    private fun updateEvent(event: Event) {
         try {
             repo.save(event)
-        }
-        catch (e : Exception){
+        } catch (e: Exception) {
             log.warn(e.message)
         }
     }
 
-    private fun log(message: String){
+    private fun log(message: String) {
         log.warn(message)
     }
 }

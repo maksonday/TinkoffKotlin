@@ -1,7 +1,5 @@
 package whois.model
 
-import javax.persistence.*
-
 data class Domain(
     val id: Int? = null,
 

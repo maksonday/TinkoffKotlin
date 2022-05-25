@@ -69,21 +69,18 @@ class DomainService(
             throw Exception("Error creating domain in DB: ${e.message}")
         }
 
-    fun prolongDomain(name : String) =
-        try{
+    fun prolongDomain(name: String) =
+        try {
             val domain = domainDao.getByName(name)
-            if (domain != null){
+            if (domain != null) {
                 val flag = domainDao.prolongDomain(domain)
-                if (flag){
+                if (flag) {
                     Response(domain, "OK")
-                }
-                else{
+                } else {
                     Response(domain, "Error")
                 }
-            }
-            else throw Exception("Domain with this name doesn't exist")
-        }
-        catch (e : Exception){
+            } else throw Exception("Domain with this name doesn't exist")
+        } catch (e: Exception) {
             Response(null, e.message)
         }
 }

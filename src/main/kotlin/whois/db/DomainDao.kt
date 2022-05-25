@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Profile
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import whois.model.Domain
-import whois.model.external.Response
 import java.sql.Statement
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

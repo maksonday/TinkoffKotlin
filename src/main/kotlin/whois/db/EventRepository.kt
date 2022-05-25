@@ -10,5 +10,5 @@ import whois.model.EventStatus
 @Profile("whois")
 @Repository
 interface EventRepository : PagingAndSortingRepository<Event, Int>, CrudRepository<Event, Int> {
-    fun findByStatus(status : EventStatus) : List <Event>
+    fun findByStatus(status: EventStatus): List<Event>
 }
