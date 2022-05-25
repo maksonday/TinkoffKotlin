@@ -8,10 +8,10 @@ spring:
       naming.physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: maksim.agafonofff@gmail.com
-    password: Sasuke06022000
+    host:
+    port:
+    username:
+    password:
     properties:
       mail:
         transport:
