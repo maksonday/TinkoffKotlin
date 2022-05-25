@@ -15,6 +15,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -33,6 +34,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
     implementation("org.springframework.boot:spring-boot-starter-web:2.6.5")
     implementation("org.springframework.data:spring-data-jdbc:2.3.3")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc:2.7.0")
     implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.5")
     testImplementation("com.ninja-squad:springmockk:3.1.1")
@@ -53,6 +55,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.1")
     implementation("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-x86_64")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.52.Final")
+    implementation("org.postgresql:postgresql:42.3.5")
+    implementation("khttp:khttp:1.0.0")
+    implementation("org.springframework.boot:spring-boot-starter-mail:2.7.0")
+    implementation("org.springframework.boot:spring-boot-starter-activemq:2.7.0")
+    implementation("org.springframework:spring-jms:5.3.20")
+    implementation("org.apache.activemq:activemq-broker:5.17.1")
 }
 
 tasks.test {

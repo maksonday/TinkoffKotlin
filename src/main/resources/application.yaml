@@ -1,18 +1,45 @@
 spring:
+  profiles:
+    active: whois
   application.name: VMPlugger
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming.physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: maksim.agafonofff@gmail.com
+    password: Sasuke06022000
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
-    username: SA
-    password: ""
-    url: jdbc:h2:mem:test
-    driver-class-name: org.h2.Driver
-server.port: 9000
+    username: postgres
+    password: Evilcore9320
+    url: jdbc:postgresql://localhost:5432/postgres
 
-connect.timeout.in.seconds: 30
+server.port: 9000
+query.link: 'https://rest.db.ripe.net/search.json?source=ripe&flags=no-referenced&type-filter=inetnum&query-string='
+connect.timeout.in.seconds: 5
 read.timeout.in.seconds: 60
 storage.address: http://localhost:9001
 kvm.list.address: http://localhost:9001
 registrator.address: http://localhost:9000/domain/register
+cron.expression: '0 * * * * *'
+mail-sender:
+  host: smtp.gmail.com
+  port: 587
+  username: maksim.agafonofff@gmail.com
+  password: Sasuke06022000
+  protocol: smtp
+  auth: true
+  starttls-enable: true
+  debug: true
