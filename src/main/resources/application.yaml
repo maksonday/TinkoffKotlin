@@ -7,20 +7,6 @@ spring:
       ddl-auto: update
       naming.physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-    host:
-    port:
-    username:
-    password:
-    properties:
-      mail:
-        transport:
-          protocol: smtp
-        debug: true
-        smtp:
-          auth: true
-          starttls:
-            enable: true
   datasource:
     username: postgres
     password: Evilcore9320
@@ -33,13 +19,13 @@ read.timeout.in.seconds: 60
 storage.address: http://localhost:9001
 kvm.list.address: http://localhost:9001
 registrator.address: http://localhost:9000/domain/register
-cron.expression: '0 * * * * *'
+cron.expression: '0 0 9 * * *'
 mail-sender:
-  host: smtp.gmail.com
-  port: 587
-  username: maksim.agafonofff@gmail.com
-  password: Sasuke06022000
-  protocol: smtp
-  auth: true
-  starttls-enable: true
-  debug: true
+  host: ${MAIL_SENDER_HOST}
+  port: ${MAIL_SENDER_PORT}
+  username: ${MAIL_SENDER_USERNAME}
+  password: ${MAIL_SENDER_PASSWORD}
+  protocol: ${MAIL_SENDER_PROTOCOL}
+  auth: ${MAIL_SENDER_AUTH}
+  starttls-enable: ${MAIL_SENDER_STARTTLS_ENABLE}
+  debug: ${MAIL_SENDER_DEBUG}

@@ -18,8 +18,11 @@ class Fetcher {
         var orgInfo: Map<String, String>? = null
         var clientInfo: Map<String, String>? = null
         if (domainInfo.containsKey("roleLink")) orgInfo = getResponse(null, domainInfo["roleLink"], null)
-        if (orgInfo != null) {
-            if (orgInfo.containsKey("personLink")) clientInfo = getResponse(null, orgInfo["personLink"], null)
+        if (domainInfo.containsKey("personLink")) clientInfo = getResponse(null, domainInfo["personLink"], null)
+        else {
+            if (orgInfo != null) {
+                if (orgInfo.containsKey("personLink")) clientInfo = getResponse(null, orgInfo["personLink"], null)
+            }
         }
         return mapOf(
             Pair("domainInfo", domainInfo),
