@@ -35,3 +35,12 @@ CREATE TABLE events
     status varchar(255),
     body   text
 );
+CREATE TABLE domains
+(
+    id       SERIAL PRIMARY KEY,
+    name     varchar(255),
+    created  varchar(255),
+    fetched  varchar(255),
+    paidTill varchar(255),
+    freeDate varchar(255)
+);

@@ -54,6 +54,10 @@ dependencies {
     implementation("org.apache.activemq:activemq-broker:5.17.1")
     implementation("org.awaitility:awaitility:4.2.0")
     implementation("org.awaitility:awaitility-kotlin:4.2.0")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.1")
+    implementation("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:osx-x86_64")
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.52.Final")
 }
 
 tasks.test {

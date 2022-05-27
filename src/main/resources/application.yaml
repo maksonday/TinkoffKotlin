@@ -17,3 +17,4 @@ read.timeout.in.seconds: 60
 storage.address: http://localhost:9001
 kvm.list.address: http://localhost:9001
 cron.expression: '0 * * * * *'
+registrator.address: http://localhost:9000/domain/register
