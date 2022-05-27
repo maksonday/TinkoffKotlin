@@ -18,8 +18,6 @@ class DomainService(
     private val domainDao: DomainDao,
     private val domainRegistrationService: DomainRegistrationService
 ) {
-    private val exceptionHandler = ControllerExceptionHandler()
-
     fun getById(id: Int): CreateResponse<Domain> = try {
         val domain = domainDao.getById(id)
         if (domain.fetched != null) {
@@ -33,7 +31,6 @@ class DomainService(
             throw Exception("Cannot fetch domain info, please try later.")
         }
     } catch (e: Exception) {
-        exceptionHandler.handleException(e)
         CreateResponse(null, e.message)
     }
 
@@ -73,7 +70,6 @@ class DomainService(
             }
             CreateResponse(Domain(id, domainName, null, null, null, null), "OK")
         } catch (e: Exception) {
-            exceptionHandler.handleException(e)
             CreateResponse(Domain(null, domainName, null, null, null, null), "Error")
         }
 
