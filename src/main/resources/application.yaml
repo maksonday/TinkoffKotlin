@@ -1,6 +1,6 @@
 spring:
   application.name: VMPlugger
-  profiles.active: jdbc
+  profiles.active: mq
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,3 +16,4 @@ connect.timeout.in.seconds: 30
 read.timeout.in.seconds: 60
 storage.address: http://localhost:9001
 kvm.list.address: http://localhost:9001
+cron.expression: '0 * * * * *'

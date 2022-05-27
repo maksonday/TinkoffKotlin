@@ -27,3 +27,11 @@ CREATE TABLE vm
     CONSTRAINT FkImage FOREIGN KEY (imageId) REFERENCES images (id),
     CONSTRAINT FkConfig FOREIGN KEY (configId) REFERENCES configs (id)
 );
+
+CREATE TABLE events
+(
+    id     SERIAL PRIMARY KEY,
+    type   varchar(255),
+    status varchar(255),
+    body   text
+);
